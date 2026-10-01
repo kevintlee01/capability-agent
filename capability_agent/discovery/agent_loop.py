@@ -5,6 +5,7 @@ import json
 import re
 import uuid
 from dataclasses import dataclass, field
+from pathlib import Path
 from time import monotonic
 from typing import Literal
 
@@ -59,10 +60,11 @@ class DiscoveryAgent:
     entry_path: str = "/"
     max_steps: int = 25
     headless: bool = False
+    evidence_base: str = "evidence"
 
     def run(self, name: str, goal: str, params: dict[str, str]) -> DiscoveryResult:
         run_id = f"discover-{uuid.uuid4().hex[:8]}"
-        logger = RunLogger(run_id, "discovery")
+        logger = RunLogger(run_id, "discovery", base_dir=Path(self.evidence_base))
         browser = BrowserSession(base_url=self.base_url, headless=self.headless)
         page = browser.start()
         control = SessionControl(run_id=run_id, run_dir=logger.run_dir, page=page)

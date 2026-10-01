@@ -41,7 +41,7 @@ def discover(
     llm = build_llm_client(settings)
     agent = DiscoveryAgent(
         llm=llm, allowlist=allowlist, base_url=settings.target_base_url,
-        entry_path=entry_path, max_steps=max_steps, headless=headless,
+        entry_path=entry_path, max_steps=max_steps, headless=headless, evidence_base=settings.evidence_dir,
     )
     result = agent.run(name=name, goal=goal, params=_parse_params(param))
     typer.echo(f"Run {result.run_id}: {result.status}")

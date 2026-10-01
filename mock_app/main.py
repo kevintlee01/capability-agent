@@ -26,12 +26,19 @@ def search_submit(request: Request, member_id: str = Form(...)):
     return RedirectResponse(url=f"/member/{member_id}", status_code=303)
 
 
-@app.get("/member/{member_id}", response_class=HTMLResponse)
-def member_detail(request: Request, member_id: str):
+def _restricted_member_response(request: Request, member_id: str):
     if member_id == "40300":
         return templates.TemplateResponse(request, "permission_denied.html", {"member_id": member_id}, status_code=403)
     if member_id == "90000":
         return templates.TemplateResponse(request, "session_expired.html", {"member_id": member_id}, status_code=440)
+    return None
+
+
+@app.get("/member/{member_id}", response_class=HTMLResponse)
+def member_detail(request: Request, member_id: str):
+    restricted = _restricted_member_response(request, member_id)
+    if restricted is not None:
+        return restricted
     if member_id == "50000":
         time.sleep(3.5)
     member = find_member(member_id)
@@ -42,6 +49,9 @@ def member_detail(request: Request, member_id: str):
 
 @app.get("/member/{member_id}/open-subaccount", response_class=HTMLResponse)
 def open_subaccount_form(request: Request, member_id: str):
+    restricted = _restricted_member_response(request, member_id)
+    if restricted is not None:
+        return restricted
     member = find_member(member_id)
     if member is None:
         return templates.TemplateResponse(request, "not_found.html", {"member_id": member_id}, status_code=404)
@@ -56,6 +66,9 @@ def open_subaccount_submit(
     nickname: str = Form(""),
     initial_deposit: str = Form(...),
 ):
+    restricted = _restricted_member_response(request, member_id)
+    if restricted is not None:
+        return restricted
     member = find_member(member_id)
     if member is None:
         return templates.TemplateResponse(request, "not_found.html", {"member_id": member_id}, status_code=404)

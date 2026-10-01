@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import re
 import uuid
+from pathlib import Path
 
 from capability_agent.artifact.schema import ActionType, CapabilityArtifact, Locator, LocatorStrategy
 from capability_agent.evidence.logger import RunLogger
@@ -75,7 +76,7 @@ def replay_artifact(
         raise ValueError(f"Missing required input params: {sorted(missing)}")
 
     run_id = f"replay-{uuid.uuid4().hex[:8]}"
-    logger = RunLogger(run_id, "replay")
+    logger = RunLogger(run_id, "replay", base_dir=Path(evidence_base))
     allowlist.check_url(artifact.base_url)
     browser = BrowserSession(base_url=artifact.base_url, headless=headless)
     browser.start()
