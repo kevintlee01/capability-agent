@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Member Search</h2>
+{% if error %}<p><font color="red">{{ error }}</font></p>{% endif %}
+<form method="post" action="/search">
+<table border="0" cellpadding="3">
+<tr><td>Member ID:</td><td><input type="text" name="member_id"></td></tr>
+<tr><td></td><td><input type="submit" value="Search"></td></tr>
+</table>
+</form>
+{% endblock %}

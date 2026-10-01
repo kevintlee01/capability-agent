@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Member Detail</h2>
+<table border="1" cellpadding="4" cellspacing="0">
+<tr><td>Member ID</td><td>{{ member.member_id }}</td></tr>
+<tr><td>Name</td><td>{{ member.first_name }} {{ member.last_name }}</td></tr>
+</table>
+<h3>Accounts</h3>
+<table border="1" cellpadding="4" cellspacing="0">
+<tr><td><b>Account #</b></td><td><b>Type</b></td><td><b>Balance</b></td></tr>
+{% for acct in member.accounts %}
+<tr><td>{{ acct.account_number }}</td><td>{{ acct.account_type }}</td><td>${{ "%.2f"|format(acct.balance) }}</td></tr>
+{% endfor %}
+</table>
+<p><a href="/member/{{ member.member_id }}/open-subaccount">Open Sub-Account</a></p>
+<p><a href="/">Back to Search</a></p>
+{% endblock %}

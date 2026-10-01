@@ -1,0 +1,13 @@
+allowed_domains:
+  - "127.0.0.1:*"
+  - "localhost:*"
+allowed_route_prefixes:
+  - "/"
+allowed_actions:
+  - navigate
+  - click
+  - fill
+  - select_option
+  - wait_for
+  - extract
+  - assert_checkpoint

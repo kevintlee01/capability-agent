@@ -1,0 +1,186 @@
+{
+  "artifact_id": "lookup_balance-handauthored",
+  "name": "lookup_balance",
+  "version": "1.0.0",
+  "description": "Look up a member by ID and read their first account's balance",
+  "target_app": "meridian-credit-union-mock",
+  "surface_type": "legacy_web",
+  "base_url": "http://127.0.0.1:8731",
+  "status": "approved",
+  "created_by": "human_authored",
+  "allowlist_scope": [
+    "/",
+    "/member/*"
+  ],
+  "params": [
+    {
+      "name": "member_id",
+      "type": "string",
+      "required": true,
+      "description": "Member ID to look up",
+      "example": "10001"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "balance",
+      "type": "string",
+      "description": "First account's balance",
+      "source_step_id": 4
+    }
+  ],
+  "steps": [
+    {
+      "step_id": 1,
+      "action": "navigate",
+      "description": "go to search page",
+      "locator": null,
+      "value": "/",
+      "extract_as": null,
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    },
+    {
+      "step_id": 2,
+      "action": "fill",
+      "description": "fill member id",
+      "locator": {
+        "primary": {
+          "kind": "css",
+          "value": "input[name=member_id]",
+          "role": null,
+          "nth": null
+        },
+        "fallbacks": [],
+        "frame_path": []
+      },
+      "value": "{{params.member_id}}",
+      "extract_as": null,
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    },
+    {
+      "step_id": 3,
+      "action": "click",
+      "description": "click submit to search",
+      "locator": {
+        "primary": {
+          "kind": "role",
+          "value": "Search",
+          "role": "button",
+          "nth": null
+        },
+        "fallbacks": [
+          {
+            "kind": "text",
+            "value": "Search",
+            "role": null,
+            "nth": null
+          }
+        ],
+        "frame_path": []
+      },
+      "value": null,
+      "extract_as": null,
+      "risk_level": "safe",
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    },
+    {
+      "step_id": 4,
+      "action": "extract",
+      "description": "extract first account balance",
+      "locator": {
+        "primary": {
+          "kind": "css",
+          "value": "table[border=\"1\"] >> nth=1 >> tr >> nth=1 >> td >> nth=2",
+          "role": null,
+          "nth": null
+        },
+        "fallbacks": [],
+        "frame_path": []
+      },
+      "value": null,
+      "extract_as": "balance",
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    }
+  ],
+  "checkpoint": {
+    "locator": {
+      "primary": {
+        "kind": "role",
+        "value": "Member Detail",
+        "role": "heading",
+        "nth": null
+      },
+      "fallbacks": [],
+      "frame_path": []
+    },
+    "expected_text_contains": null,
+    "description": "Member Detail heading is visible"
+  },
+  "known_outcomes": [
+    {
+      "name": "member_not_found",
+      "detector": {
+        "primary": {
+          "kind": "text",
+          "value": "No member found",
+          "role": null,
+          "nth": null
+        },
+        "fallbacks": [],
+        "frame_path": []
+      },
+      "description": "No member record exists for the given ID.",
+      "expected_text_contains": null
+    },
+    {
+      "name": "permission_denied",
+      "detector": {
+        "primary": {
+          "kind": "role",
+          "value": "Access Denied",
+          "role": "heading",
+          "nth": null
+        },
+        "fallbacks": [],
+        "frame_path": []
+      },
+      "description": "The teller session lacks permission to view this record.",
+      "expected_text_contains": null
+    },
+    {
+      "name": "session_expired",
+      "detector": {
+        "primary": {
+          "kind": "role",
+          "value": "Session Expired",
+          "role": "heading",
+          "nth": null
+        },
+        "fallbacks": [],
+        "frame_path": []
+      },
+      "description": "The teller session timed out mid-flow.",
+      "expected_text_contains": null
+    }
+  ],
+  "discovery_meta": null
+}
