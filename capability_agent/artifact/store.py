@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 
 from capability_agent.artifact.schema import CapabilityArtifact
+from capability_agent.guardrails.redact import redact_dict
 
 DEFAULT_ARTIFACT_DIR = Path("artifacts")
 
@@ -14,7 +15,8 @@ def artifact_path(name: str, version: str, base_dir: Path = DEFAULT_ARTIFACT_DIR
 def save_artifact(artifact: CapabilityArtifact, base_dir: Path = DEFAULT_ARTIFACT_DIR) -> Path:
     path = artifact_path(artifact.name, artifact.version, base_dir)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(artifact.model_dump_json(indent=2))
+    safe_data = redact_dict(json.loads(artifact.model_dump_json()))
+    path.write_text(json.dumps(safe_data, indent=2))
     return path
 
 

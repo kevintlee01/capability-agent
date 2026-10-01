@@ -13,6 +13,7 @@ class FailureDetail(BaseModel):
     expected: str
     observed: str
     message: str
+    screenshot_path: str | None = None
 
 
 class BusinessOutcomeDetail(BaseModel):

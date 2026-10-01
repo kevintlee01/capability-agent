@@ -1,0 +1,233 @@
+{
+  "artifact_id": "open_sub_account-handauthored",
+  "name": "open_sub_account",
+  "version": "1.0.0",
+  "description": "Open a new sub-account for a member and reach the confirmation screen",
+  "target_app": "meridian-credit-union-mock",
+  "surface_type": "legacy_web",
+  "base_url": "http://127.0.0.1:8731",
+  "status": "draft",
+  "created_by": "human_authored",
+  "allowlist_scope": [
+    "/member/*/open-subaccount*"
+  ],
+  "params": [
+    {
+      "name": "member_id",
+      "type": "string",
+      "required": true,
+      "description": "Member ID to open the sub-account for",
+      "example": "20002"
+    },
+    {
+      "name": "account_type",
+      "type": "string",
+      "required": true,
+      "description": "Savings or Checking",
+      "example": "Savings"
+    },
+    {
+      "name": "nickname",
+      "type": "string",
+      "required": true,
+      "description": "Nickname for the new sub-account",
+      "example": "Rainy Day"
+    },
+    {
+      "name": "initial_deposit",
+      "type": "string",
+      "required": true,
+      "description": "Initial deposit amount",
+      "example": "50"
+    }
+  ],
+  "outputs": [],
+  "steps": [
+    {
+      "step_id": 1,
+      "action": "navigate",
+      "description": "go to the open sub-account form",
+      "locator": null,
+      "value": "/member/{{params.member_id}}/open-subaccount",
+      "extract_as": null,
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    },
+    {
+      "step_id": 2,
+      "action": "select_option",
+      "description": "choose the account type",
+      "locator": {
+        "primary": {
+          "kind": "css",
+          "value": "select[name=account_type]",
+          "role": null,
+          "nth": null
+        },
+        "fallbacks": [],
+        "frame_path": []
+      },
+      "value": "{{params.account_type}}",
+      "extract_as": null,
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    },
+    {
+      "step_id": 3,
+      "action": "fill",
+      "description": "fill the nickname",
+      "locator": {
+        "primary": {
+          "kind": "css",
+          "value": "input[name=nickname]",
+          "role": null,
+          "nth": null
+        },
+        "fallbacks": [],
+        "frame_path": []
+      },
+      "value": "{{params.nickname}}",
+      "extract_as": null,
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    },
+    {
+      "step_id": 4,
+      "action": "fill",
+      "description": "fill the initial deposit",
+      "locator": {
+        "primary": {
+          "kind": "css",
+          "value": "input[name=initial_deposit]",
+          "role": null,
+          "nth": null
+        },
+        "fallbacks": [],
+        "frame_path": []
+      },
+      "value": "{{params.initial_deposit}}",
+      "extract_as": null,
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    },
+    {
+      "step_id": 5,
+      "action": "click",
+      "description": "click Open Account to open the sub-account",
+      "locator": {
+        "primary": {
+          "kind": "role",
+          "value": "Open Account",
+          "role": "button",
+          "nth": null
+        },
+        "fallbacks": [
+          {
+            "kind": "text",
+            "value": "Open Account",
+            "role": null,
+            "nth": null
+          }
+        ],
+        "frame_path": []
+      },
+      "value": null,
+      "extract_as": null,
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    }
+  ],
+  "checkpoint": {
+    "locator": {
+      "primary": {
+        "kind": "role",
+        "value": "Sub-Account Opened",
+        "role": "heading",
+        "nth": null
+      },
+      "fallbacks": [],
+      "frame_path": []
+    },
+    "expected_text_contains": null,
+    "description": "Sub-Account Opened heading is visible"
+  },
+  "known_outcomes": [
+    {
+      "name": "validation_error_nickname",
+      "detector": {
+        "primary": {
+          "kind": "text",
+          "value": "Nickname is required",
+          "role": null,
+          "nth": null
+        },
+        "fallbacks": [],
+        "frame_path": []
+      },
+      "description": "The nickname field was left blank.",
+      "expected_text_contains": null
+    },
+    {
+      "name": "validation_error_deposit",
+      "detector": {
+        "primary": {
+          "kind": "text",
+          "value": "greater than zero",
+          "role": null,
+          "nth": null
+        },
+        "fallbacks": [],
+        "frame_path": []
+      },
+      "description": "The initial deposit was zero or negative.",
+      "expected_text_contains": null
+    }
+  ],
+  "interstitials": [
+    {
+      "name": "fraud_review_hold",
+      "detector": {
+        "primary": {
+          "kind": "role",
+          "value": "Fraud Review Hold",
+          "role": "heading",
+          "nth": null
+        },
+        "fallbacks": [],
+        "frame_path": []
+      },
+      "dismiss_action": {
+        "primary": {
+          "kind": "role",
+          "value": "Proceed Anyway",
+          "role": "button",
+          "nth": null
+        },
+        "fallbacks": [],
+        "frame_path": []
+      },
+      "description": "Member is flagged for manual fraud review; proceeding anyway is the recorded recovery."
+    }
+  ],
+  "discovery_meta": null
+}

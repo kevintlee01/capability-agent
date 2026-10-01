@@ -4,8 +4,6 @@ from __future__ import annotations
 import re
 import uuid
 
-from playwright.sync_api import Page
-
 from capability_agent.artifact.schema import ActionType, CapabilityArtifact, Locator, LocatorStrategy
 from capability_agent.evidence.logger import RunLogger
 from capability_agent.guardrails.allowlist import AllowlistPolicy, GuardrailViolation
@@ -44,6 +42,26 @@ def _check_known_outcomes(browser: BrowserSession, artifact: CapabilityArtifact,
     return None
 
 
+def _dismiss_interstitials(browser: BrowserSession, artifact: CapabilityArtifact, params: dict[str, str], logger: RunLogger, recovered: list[str]) -> None:
+    """Dismiss every known interstitial currently showing, one pass each."""
+    for handler in artifact.interstitials:
+        detector = _render_locator(handler.detector, params)
+        if browser.is_visible(detector):
+            dismiss = _render_locator(handler.dismiss_action, params)
+            browser.click(dismiss)
+            recovered.append(f"interstitial '{handler.name}' dismissed")
+            logger.event("interstitial_dismissed", {"name": handler.name})
+
+
+def _fail(browser: BrowserSession, logger: RunLogger, recovered: list[str], step_id: int | None, expected: str, observed: str, message: str) -> ReplayOutcome:
+    """Every failure path takes a screenshot -- the richer signal on failure."""
+    shot = logger.screenshot_path(f"failure-step{step_id or 'checkpoint'}")
+    browser.screenshot(shot)
+    failure = FailureDetail(step_id=step_id, expected=expected, observed=observed, message=message, screenshot_path=str(shot))
+    logger.write_summary({"status": "failure", "step_id": step_id, "message": message})
+    return ReplayOutcome(result_type="failure", failure=failure, recovered_conditions=recovered)
+
+
 def replay_artifact(
     artifact: CapabilityArtifact,
     input_params: dict[str, str],
@@ -60,7 +78,7 @@ def replay_artifact(
     logger = RunLogger(run_id, "replay")
     allowlist.check_url(artifact.base_url)
     browser = BrowserSession(base_url=artifact.base_url, headless=headless)
-    page = browser.start()
+    browser.start()
     recovered: list[str] = []
     extracted: dict[str, str] = {}
 
@@ -73,17 +91,21 @@ def replay_artifact(
 
         for step in artifact.steps:
             if requires_approval_to_replay(step, artifact.status, allow_risky):
-                failure = FailureDetail(
-                    step_id=step.step_id, expected="approval or --allow-risky",
-                    observed="risky step blocked", message=f"Step {step.step_id} ('{step.description}') is risky and the artifact is not approved.",
+                return _fail(
+                    browser, logger, recovered, step.step_id, "approval or --allow-risky", "risky step blocked",
+                    f"Step {step.step_id} ('{step.description}') is risky and the artifact is not approved.",
                 )
-                logger.write_summary({"status": "failure", "reason": "risky_step_blocked"})
-                return ReplayOutcome(result_type="failure", failure=failure)
 
             outcome = _run_step(browser, step, input_params, logger, recovered, extracted)
             if outcome is not None:
+                if outcome.result_type == "failure" and outcome.failure and not outcome.failure.screenshot_path:
+                    shot = logger.screenshot_path(f"failure-step{step.step_id}")
+                    browser.screenshot(shot)
+                    outcome.failure.screenshot_path = str(shot)
                 logger.write_summary({"status": outcome.result_type})
                 return outcome
+
+            _dismiss_interstitials(browser, artifact, input_params, logger, recovered)
 
             outcome = _check_known_outcomes(browser, artifact, input_params)
             if outcome:
@@ -144,21 +166,19 @@ def _execute_step(browser: BrowserSession, step, params: dict[str, str], extract
 def _verify_checkpoint(browser: BrowserSession, artifact: CapabilityArtifact, params: dict[str, str], extracted: dict[str, str], recovered: list[str], logger: RunLogger) -> ReplayOutcome:
     locator = _render_locator(artifact.checkpoint.locator, params)
     if not browser.is_visible(locator):
-        logger.write_summary({"status": "failure", "reason": "checkpoint_not_met"})
-        return ReplayOutcome(result_type="failure", failure=FailureDetail(
-            step_id=None, expected=artifact.checkpoint.description, observed="checkpoint element not found",
-            message="Replay completed all steps but the success checkpoint was not met.",
-        ), recovered_conditions=recovered)
+        return _fail(
+            browser, logger, recovered, None, artifact.checkpoint.description, "checkpoint element not found",
+            "Replay completed all steps but the success checkpoint was not met.",
+        )
 
     expected_text = artifact.checkpoint.expected_text_contains
     if expected_text:
         actual = browser.extract_text(locator)
         if expected_text not in actual:
-            logger.write_summary({"status": "failure", "reason": "checkpoint_text_mismatch"})
-            return ReplayOutcome(result_type="failure", failure=FailureDetail(
-                step_id=None, expected=f"text containing '{expected_text}'", observed=actual,
-                message="Checkpoint element found but did not contain the expected text.",
-            ), recovered_conditions=recovered)
+            return _fail(
+                browser, logger, recovered, None, f"text containing '{expected_text}'", actual,
+                "Checkpoint element found but did not contain the expected text.",
+            )
 
     outputs = {out.name: extracted.get(out.name) for out in artifact.outputs}
     logger.event("checkpoint_verified", {"outputs": outputs})

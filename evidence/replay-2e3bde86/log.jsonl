@@ -1,0 +1,7 @@
+{"ts": "2026-10-01T03:35:54.590640+00:00", "type": "run_started", "detail": {"run_type": "replay", "run_id": "replay-2e3bde86"}}
+{"ts": "2026-10-01T03:35:59.334420+00:00", "type": "step_executed", "detail": {"step_id": 1, "attempt": 1}}
+{"ts": "2026-10-01T03:36:03.865159+00:00", "type": "step_executed", "detail": {"step_id": 2, "attempt": 1}}
+{"ts": "2026-10-01T03:36:08.393339+00:00", "type": "step_executed", "detail": {"step_id": 3, "attempt": 1}}
+{"ts": "2026-10-01T03:36:12.905676+00:00", "type": "step_executed", "detail": {"step_id": 4, "attempt": 1}}
+{"ts": "2026-10-01T03:36:17.514548+00:00", "type": "step_executed", "detail": {"step_id": 5, "attempt": 1}}
+{"ts": "2026-10-01T03:36:22.044448+00:00", "type": "checkpoint_verified", "detail": {"outputs": {}}}

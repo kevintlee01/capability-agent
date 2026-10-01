@@ -1,0 +1,8 @@
+{"ts": "2026-10-01T03:36:38.913227+00:00", "type": "run_started", "detail": {"run_type": "replay", "run_id": "replay-3678ea93"}}
+{"ts": "2026-10-01T03:36:42.834650+00:00", "type": "step_executed", "detail": {"step_id": 1, "attempt": 1}}
+{"ts": "2026-10-01T03:36:47.378305+00:00", "type": "step_executed", "detail": {"step_id": 2, "attempt": 1}}
+{"ts": "2026-10-01T03:36:51.917340+00:00", "type": "step_executed", "detail": {"step_id": 3, "attempt": 1}}
+{"ts": "2026-10-01T03:36:56.431348+00:00", "type": "step_executed", "detail": {"step_id": 4, "attempt": 1}}
+{"ts": "2026-10-01T03:37:01.017449+00:00", "type": "step_executed", "detail": {"step_id": 5, "attempt": 1}}
+{"ts": "2026-10-01T03:37:01.093373+00:00", "type": "interstitial_dismissed", "detail": {"name": "fraud_review_hold"}}
+{"ts": "2026-10-01T03:37:04.113009+00:00", "type": "checkpoint_verified", "detail": {"outputs": {}}}

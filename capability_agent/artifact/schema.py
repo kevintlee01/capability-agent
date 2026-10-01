@@ -122,6 +122,20 @@ class OutcomeDefinition(BaseModel):
     expected_text_contains: str | None = None
 
 
+class InterstitialHandler(BaseModel):
+    """A recoverable, known interruption: detect it, dismiss it, keep going.
+
+    Distinct from OutcomeDefinition on purpose: an interstitial is noise the
+    flow can recover from (e.g. a fraud-review hold screen), not an answer
+    the caller needs reported. Checked before every step, same as outcomes.
+    """
+
+    name: str
+    detector: Locator
+    dismiss_action: Locator
+    description: str
+
+
 class DiscoveryMeta(BaseModel):
     """Pointer back to the evidence of the run that produced this artifact."""
 
@@ -150,6 +164,7 @@ class CapabilityArtifact(BaseModel):
     steps: list[Step]
     checkpoint: Checkpoint
     known_outcomes: list[OutcomeDefinition] = Field(default_factory=list)
+    interstitials: list[InterstitialHandler] = Field(default_factory=list)
     discovery_meta: DiscoveryMeta | None = None
 
     def param_names(self) -> set[str]:

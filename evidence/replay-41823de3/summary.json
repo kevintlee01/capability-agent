@@ -1,0 +1,5 @@
+{
+  "status": "failure",
+  "step_id": 5,
+  "message": "Step 5 ('click Open Account to open the sub-account') is risky and the artifact is not approved."
+}

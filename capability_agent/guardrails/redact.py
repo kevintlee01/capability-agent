@@ -17,16 +17,22 @@ def redact_text(text: str) -> str:
     return redacted
 
 
+def _redact_value(value):
+    if isinstance(value, dict):
+        return redact_dict(value)
+    if isinstance(value, list):
+        return [_redact_value(item) for item in value]
+    if isinstance(value, str):
+        return redact_text(value)
+    return value
+
+
 def redact_dict(data: dict) -> dict:
-    """Recursively redact sensitive field names and scrub string values."""
+    """Recursively redact sensitive field names and scrub strings, lists included."""
     result = {}
     for key, value in data.items():
         if key.lower() in _SENSITIVE_FIELD_NAMES:
             result[key] = "[REDACTED]"
-        elif isinstance(value, dict):
-            result[key] = redact_dict(value)
-        elif isinstance(value, str):
-            result[key] = redact_text(value)
         else:
-            result[key] = value
+            result[key] = _redact_value(value)
     return result

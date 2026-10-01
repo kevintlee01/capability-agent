@@ -61,3 +61,9 @@ def test_redact_dict_scrubs_sensitive_field_names():
     scrubbed = redact_dict({"password": "hunter2", "note": "fine"})
     assert scrubbed["password"] == "[REDACTED]"
     assert scrubbed["note"] == "fine"
+
+
+def test_redact_dict_recurses_into_lists_of_dicts():
+    scrubbed = redact_dict({"steps": [{"value": "ssn 123-45-6789"}, {"value": "fine"}]})
+    assert "123-45-6789" not in scrubbed["steps"][0]["value"]
+    assert scrubbed["steps"][1]["value"] == "fine"

@@ -1,7 +1,7 @@
 """Schema sanity checks: the artifact round-trips through save/load intact."""
 from capability_agent.artifact.schema import (
-    ActionType, CapabilityArtifact, Checkpoint, Locator, LocatorKind,
-    LocatorStrategy, Param, Step, SurfaceType,
+    ActionType, CapabilityArtifact, Checkpoint, InterstitialHandler, Locator,
+    LocatorKind, LocatorStrategy, Param, Step, SurfaceType,
 )
 from capability_agent.artifact.store import load_artifact, save_artifact
 
@@ -32,3 +32,12 @@ def test_artifact_round_trips_through_storage(tmp_path):
 def test_param_names_reflects_declared_params():
     artifact = _sample_artifact()
     assert artifact.param_names() == {"member_id"}
+
+
+def test_interstitial_handler_round_trips():
+    detector = Locator(primary=LocatorStrategy(kind=LocatorKind.ROLE, value="Fraud Review Hold", role="heading"))
+    dismiss = Locator(primary=LocatorStrategy(kind=LocatorKind.ROLE, value="Proceed Anyway", role="button"))
+    handler = InterstitialHandler(name="fraud_hold", detector=detector, dismiss_action=dismiss, description="Fraud review hold screen")
+    artifact = _sample_artifact()
+    artifact.interstitials.append(handler)
+    assert artifact.interstitials[0].name == "fraud_hold"
