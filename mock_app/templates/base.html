@@ -116,7 +116,7 @@
   }
   .field-table td { padding: 8px 4px; vertical-align: middle; }
   .field-label { color: var(--muted); font-size: 13px; width: 160px; }
-  input[type="text"], select {
+  input[type="text"], input[type="number"], select {
     width: 100%;
     max-width: 280px;
     padding: 9px 12px;
@@ -124,8 +124,19 @@
     border-radius: 6px;
     font-size: 14px;
     background: #fff;
+    font-family: inherit;
   }
-  input[type="text"]:focus, select:focus {
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7788' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    padding-right: 34px;
+  }
+  input[type="text"]:focus, input[type="number"]:focus, select:focus {
     outline: none;
     border-color: var(--gold);
     box-shadow: 0 0 0 3px rgba(205,164,61,0.2);
