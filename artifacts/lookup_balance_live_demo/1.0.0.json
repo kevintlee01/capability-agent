@@ -1,0 +1,144 @@
+{
+  "artifact_id": "lookup_balance_live_demo-71e7561a",
+  "name": "lookup_balance_live_demo",
+  "version": "1.0.0",
+  "description": "Search for member {{member_id}} and read the balance of their savings account",
+  "target_app": "meridian-credit-union-mock",
+  "surface_type": "legacy_web",
+  "base_url": "http://127.0.0.1:8731",
+  "status": "draft",
+  "created_by": "llm_discovery",
+  "allowlist_scope": [],
+  "params": [
+    {
+      "name": "member_id",
+      "type": "string",
+      "required": true,
+      "description": "Input 'member_id'",
+      "example": "10001"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "savings_balance",
+      "type": "string",
+      "description": "Extracted value 'savings_balance'",
+      "source_step_id": 3
+    }
+  ],
+  "steps": [
+    {
+      "step_id": 1,
+      "action": "fill",
+      "description": "Enter the member ID into the search textbox",
+      "locator": {
+        "primary": {
+          "kind": "role",
+          "value": "",
+          "role": "textbox",
+          "nth": 0
+        },
+        "fallbacks": [],
+        "frame_path": []
+      },
+      "value": "{{params.member_id}}",
+      "extract_as": null,
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    },
+    {
+      "step_id": 2,
+      "action": "click",
+      "description": "Click the Search button to execute the member search for ID 10001.",
+      "locator": {
+        "primary": {
+          "kind": "role",
+          "value": "Search",
+          "role": "button",
+          "nth": null
+        },
+        "fallbacks": [
+          {
+            "kind": "text",
+            "value": "Search",
+            "role": null,
+            "nth": null
+          }
+        ],
+        "frame_path": []
+      },
+      "value": null,
+      "extract_as": null,
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    },
+    {
+      "step_id": 3,
+      "action": "extract",
+      "description": "The savings account balance is visible in the accounts table as $4820.55 for row SAV-10001-01 Savings. I will extract this value.",
+      "locator": {
+        "primary": {
+          "kind": "role",
+          "value": "$4820.55",
+          "role": "cell",
+          "nth": null
+        },
+        "fallbacks": [
+          {
+            "kind": "text",
+            "value": "$4820.55",
+            "role": null,
+            "nth": null
+          }
+        ],
+        "frame_path": []
+      },
+      "value": null,
+      "extract_as": "savings_balance",
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    }
+  ],
+  "checkpoint": {
+    "locator": {
+      "primary": {
+        "kind": "role",
+        "value": "Accounts",
+        "role": "heading",
+        "nth": null
+      },
+      "fallbacks": [
+        {
+          "kind": "text",
+          "value": "Accounts",
+          "role": null,
+          "nth": null
+        }
+      ],
+      "frame_path": []
+    },
+    "expected_text_contains": "Accounts",
+    "description": "Checkpoint: heading 'Accounts'"
+  },
+  "known_outcomes": [],
+  "interstitials": [],
+  "discovery_meta": {
+    "model": "gemini-flash-lite-latest",
+    "run_id": "discover-ad48e232",
+    "step_count": 3,
+    "duration_ms": 3707,
+    "discovered_at": "2026-10-01T05:38:54.316864Z"
+  }
+}

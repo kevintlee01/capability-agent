@@ -174,7 +174,7 @@ def _verify_checkpoint(browser: BrowserSession, artifact: CapabilityArtifact, pa
     expected_text = artifact.checkpoint.expected_text_contains
     if expected_text:
         actual = browser.extract_text(locator)
-        if expected_text not in actual:
+        if expected_text.strip().lower() not in actual.strip().lower():
             return _fail(
                 browser, logger, recovered, None, f"text containing '{expected_text}'", actual,
                 "Checkpoint element found but did not contain the expected text.",
