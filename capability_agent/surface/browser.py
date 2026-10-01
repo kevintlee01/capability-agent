@@ -52,16 +52,18 @@ def resolve_locator(page: Page, locator: Locator):
 class BrowserSession:
     """One shared browser context for the lifetime of a discovery or replay run."""
 
-    def __init__(self, base_url: str, headless: bool = False):
+    def __init__(self, base_url: str, headless: bool = False, engine: str = "chromium"):
         self.base_url = base_url
         self.headless = headless
+        self.engine = engine
         self._playwright = None
         self.browser = None
         self.page: Page | None = None
 
     def start(self) -> Page:
         self._playwright = sync_playwright().start()
-        self.browser = self._playwright.chromium.launch(headless=self.headless)
+        browser_type = getattr(self._playwright, self.engine)
+        self.browser = browser_type.launch(headless=self.headless)
         context = self.browser.new_context(base_url=self.base_url)
         self.page = context.new_page()
         return self.page

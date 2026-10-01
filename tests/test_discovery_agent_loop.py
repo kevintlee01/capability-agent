@@ -122,6 +122,18 @@ def test_discovery_max_steps_exhausted_then_succeeds_in_grace_period(live_mock_a
     assert result.status == "completed"
 
 
+def test_discovery_grace_period_still_stuck_gives_up_cleanly(live_mock_app_url, tmp_path):
+    decisions = [
+        {"reasoning": "wait a moment", "action": "wait_for"},
+        {"reasoning": "still stuck", "action": "escalate", "failure_reason": "still stuck"},
+    ]
+    agent = _agent(FakeLLMClient(decisions), live_mock_app_url, tmp_path, max_steps=1)
+    with PersistentResumer(tmp_path, "take a look"):
+        result = agent.run(name="demo", goal="goal", params={})
+    assert result.status == "failed"
+    assert result.failure_reason == "unresolved after escalation"
+
+
 def test_discovery_exercises_every_action_dispatch_branch(live_mock_app_url, tmp_path):
     decisions = [
         {"reasoning": "go to the open-subaccount form", "action": "navigate", "value": "/member/20002/open-subaccount"},

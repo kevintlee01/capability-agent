@@ -32,13 +32,13 @@ def index(request: Request):
 @app.get("/artifacts/{name}/{version}", response_class=HTMLResponse)
 def artifact_detail(request: Request, name: str, version: str):
     artifact = get_artifact(name, version)
-    return templates.TemplateResponse(request, "artifact_detail.html", {"artifact": artifact, "name": name, "version": version})
+    return templates.TemplateResponse(request, "artifact_detail.html", {"artifact": artifact, "name": name, "version": version, "active": "capabilities"})
 
 
 @app.get("/runs/{run_id}", response_class=HTMLResponse)
 def run_detail(request: Request, run_id: str):
     run = get_run_detail(run_id)
-    return templates.TemplateResponse(request, "run_detail.html", {"run": run})
+    return templates.TemplateResponse(request, "run_detail.html", {"run": run, "active": "runs"})
 
 
 @app.post("/runs/{run_id}/resume")

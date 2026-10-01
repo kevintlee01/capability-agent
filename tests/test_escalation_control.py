@@ -39,3 +39,21 @@ def test_request_intervention_times_out_without_an_operator(tmp_path):
 
 def test_operator_status_reports_no_pending_intervention_by_default(tmp_path):
     assert operator_cli.show_status(tmp_path) is None
+
+
+def test_human_action_listener_records_navigation_on_the_main_frame(tmp_path):
+    from unittest.mock import MagicMock
+
+    fake_page = MagicMock()
+    control = SessionControl(run_id="r3", run_dir=tmp_path, page=fake_page)
+    detach = control._attach_human_action_listeners()
+    on_nav = fake_page.on.call_args.args[1]
+
+    main_frame = MagicMock(url="http://x/main")
+    fake_page.main_frame = main_frame
+    on_nav(main_frame)
+    on_nav(MagicMock(url="http://x/iframe"))
+
+    assert control.human_actions == [{"type": "navigation", "url": "http://x/main"}]
+    detach()
+    fake_page.remove_listener.assert_called_once_with("framenavigated", on_nav)

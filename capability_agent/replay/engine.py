@@ -70,6 +70,7 @@ def replay_artifact(
     headless: bool = True,
     allow_risky: bool = False,
     evidence_base: str = "evidence",
+    engine: str = "chromium",
 ) -> ReplayOutcome:
     missing = artifact.param_names() - input_params.keys()
     if missing:
@@ -78,7 +79,7 @@ def replay_artifact(
     run_id = f"replay-{uuid.uuid4().hex[:8]}"
     logger = RunLogger(run_id, "replay", base_dir=Path(evidence_base))
     allowlist.check_url(artifact.base_url)
-    browser = BrowserSession(base_url=artifact.base_url, headless=headless)
+    browser = BrowserSession(base_url=artifact.base_url, headless=headless, engine=engine)
     browser.start()
     recovered: list[str] = []
     extracted: dict[str, str] = {}

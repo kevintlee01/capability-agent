@@ -26,7 +26,7 @@ def test_replay_cmd_success_exits_zero(tmp_path, monkeypatch):
     fake_artifact = MagicMock()
     with patch("capability_agent.cli.load_artifact", return_value=fake_artifact), \
          patch("capability_agent.cli.replay_artifact", return_value=ReplayOutcome(result_type="success", outputs={"x": "y"})):
-        result = runner.invoke(app, ["replay", "--name", "demo"])
+        result = runner.invoke(app, ["replay", "--name", "demo", "--param", "member_id=10001"])
     assert result.exit_code == 0
     assert '"result_type": "success"' in result.stdout
 

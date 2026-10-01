@@ -23,7 +23,7 @@ class _ServerThread(uvicorn.Server):
 @pytest.fixture(scope="session")
 def live_mock_app_url():
     port = _free_port()
-    config = uvicorn.Config(app, host="127.0.0.1", port=port, log_level="error")
+    config = uvicorn.Config(app, host="127.0.0.1", port=port, log_level="error", loop="asyncio")
     server = _ServerThread(config=config)
     thread = threading.Thread(target=server.run, daemon=True)
     thread.start()

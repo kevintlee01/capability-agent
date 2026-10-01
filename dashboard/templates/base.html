@@ -17,7 +17,7 @@ tailwind.config = { theme: { extend: {
 }}}
 </script>
 <style>
-  body { background: #f7f8fb; }
+  body { background: #f7f8fb; background-image: radial-gradient(circle at 15% 0%, rgba(99,102,241,0.07), transparent 40%), radial-gradient(circle at 90% 10%, rgba(168,85,247,0.06), transparent 35%); background-attachment: fixed; }
   .nav-link { position: relative; transition: all 0.15s ease; }
   .nav-link.active { background: linear-gradient(90deg, rgba(99,102,241,0.08), transparent); color: #4338ca; font-weight: 600; }
   .nav-link.active::before { content: ''; position: absolute; left: -24px; top: 8px; bottom: 8px; width: 3px; border-radius: 4px; background: #4f46e5; }
@@ -26,11 +26,28 @@ tailwind.config = { theme: { extend: {
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }
+  @keyframes fade-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  main { animation: fade-up 0.35s ease both; }
+  #mobile-drawer { transition: transform 0.25s ease; }
+  #mobile-backdrop.closed { opacity: 0; pointer-events: none; }
+  @media (max-width: 767px) { #mobile-drawer.closed { transform: translateX(-100%); } }
 </style>
 </head>
 <body class="h-full text-slate-700 font-sans antialiased">
+<header class="md:hidden sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-slate-200/80 px-4 py-3 flex items-center justify-between">
+  <a href="/" class="flex items-center gap-2">
+    <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-brand-500 to-violet-500 flex items-center justify-center text-white">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/></svg>
+    </div>
+    <span class="font-bold text-slate-900 text-sm">Mission Control</span>
+  </a>
+  <button onclick="document.getElementById('mobile-drawer').classList.remove('closed');document.getElementById('mobile-backdrop').classList.remove('closed');" aria-label="Open navigation" class="p-2 rounded-lg hover:bg-slate-100">
+    <svg class="h-5 w-5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+</header>
+<div id="mobile-backdrop" onclick="this.classList.add('closed');document.getElementById('mobile-drawer').classList.add('closed');" class="closed fixed inset-0 bg-slate-900/30 z-40 md:hidden transition-opacity"></div>
 <div class="flex min-h-full">
-  <aside class="w-64 shrink-0 bg-white border-r border-slate-200/80 px-6 py-7 hidden md:flex md:flex-col">
+  <aside id="mobile-drawer" class="closed fixed md:static z-50 top-0 left-0 h-full w-64 shrink-0 bg-white border-r border-slate-200/80 px-6 py-7 flex flex-col">
     <div class="flex items-center gap-3 mb-9">
       <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-brand-500 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/30">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/></svg>
@@ -45,16 +62,23 @@ tailwind.config = { theme: { extend: {
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
         Overview
       </a>
-      <a href="/#capabilities" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-50 text-slate-600">
+      <a href="/#capabilities" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-50 text-slate-600 {% if active == 'capabilities' %}active{% endif %}">
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
         Capabilities
       </a>
-      <a href="/#runs" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-50 text-slate-600">
+      <a href="/#runs" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-50 text-slate-600 {% if active == 'runs' %}active{% endif %}">
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 7h6m-6 4h6"/></svg>
         Run Evidence
       </a>
     </nav>
     <div class="mt-auto pt-6 border-t border-slate-100 text-xs text-slate-400 leading-relaxed">
+      <div class="flex items-center gap-2 mb-3 text-slate-500 font-medium">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
+        Reading evidence live
+      </div>
       Discovery runs with an LLM. Replay runs without one. This console only
       reads evidence on disk, plus one real action: resuming an escalation.
     </div>
@@ -63,5 +87,13 @@ tailwind.config = { theme: { extend: {
     {% block content %}{% endblock %}
   </main>
 </div>
+<script>
+document.querySelectorAll('#mobile-drawer a').forEach(function (link) {
+  link.addEventListener('click', function () {
+    document.getElementById('mobile-drawer').classList.add('closed');
+    document.getElementById('mobile-backdrop').classList.add('closed');
+  });
+});
+</script>
 </body>
 </html>
