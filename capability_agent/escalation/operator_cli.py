@@ -1,8 +1,4 @@
-"""The mock operator surface: deliberately bare, per the assignment's scope
-note (a full co-browsing console is out of scope). Real part: it reads/writes
-the same control files the live run is blocking on, so resuming here truly
-hands control back to the same session -- not a new one.
-"""
+"""Deliberately bare mock operator surface: reads/writes the same control files the live run is blocking on, so resuming hands back the same session."""
 import json
 from pathlib import Path
 

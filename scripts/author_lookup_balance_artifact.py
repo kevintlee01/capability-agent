@@ -1,8 +1,4 @@
-"""One-off script: hand-author a 'lookup_balance' artifact to prove the
-replay engine (locators, params, checkpoint, known business outcomes) works
-end to end against the live mock app, independent of the LLM discovery path.
-This is NOT the required real discovery-run evidence -- see README for that.
-"""
+"""One-off script: hand-author a 'lookup_balance' artifact to prove replay works end to end, independent of the LLM discovery path."""
 from capability_agent.artifact.schema import (
     ActionType, CapabilityArtifact, Checkpoint, Locator, LocatorKind,
     LocatorStrategy, Output, OutcomeDefinition, Param, Step, SurfaceType,

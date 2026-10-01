@@ -1,6 +1,4 @@
-"""Observe -> decide -> act loop. The LLM decides; this module executes,
-guards, records, and -- on success -- compiles a replayable artifact.
-"""
+"""Observe -> decide -> act loop: the LLM decides, this module executes/guards/records, and compiles a replayable artifact on success."""
 from __future__ import annotations
 
 import json

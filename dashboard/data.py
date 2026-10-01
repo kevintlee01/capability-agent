@@ -1,9 +1,4 @@
-"""Read-only helpers: turn artifacts/ and evidence/ on disk into view models.
-
-Deliberately has zero write paths except the one escalation resume action --
-this is a viewer plus a single, real, already-existing control-transfer call,
-not a new surface for arbitrary mutation.
-"""
+"""Read-only view-model helpers over artifacts/ and evidence/ on disk; the only write path is the one real escalation resume action."""
 from __future__ import annotations
 
 import json

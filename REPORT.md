@@ -64,19 +64,37 @@ retrying); and checking `known_outcomes` after every step, not just at the
 end, because an outcome page can appear mid-flow and short-circuit the rest
 of the script.
 
+The spec draws a three-way line between business outcomes, recoverable
+conditions, and hard failures, and the schema has a distinct first-class
+mechanism for each rather than one generic "error" bucket:
+
+* **Business outcomes** (`known_outcomes`): named, terminal, reported to the
+  caller as data, not a crash.
+* **Recoverable conditions**: two kinds, two mechanisms. Transient waits use
+  `RetryPolicy` (bounded attempts, fixed backoff). Known interstitials (e.g.
+  a fraud-review hold screen) use a new `interstitials` list -- each a
+  `(detector, dismiss_action)` pair checked after every step; if the
+  detector matches, the engine clicks the dismiss action, logs it to
+  `recovered_conditions`, and continues the *same* run. This was missing
+  from the first pass and is exactly the gap the spec calls out explicitly
+  ("dismiss a known interstitial" is named separately from wait/retry) --
+  validated live: replaying `open_sub_account` for a flagged member
+  auto-dismisses the hold and still reaches the success checkpoint.
+* **Hard failures**: anything else -- a checkpoint never met, a locator
+  that never resolves, a risky step blocked by policy. Every failure path
+  now captures a screenshot before returning (`FailureDetail.screenshot_path`),
+  so "richer signal on failure" isn't just logged text -- validated by
+  deliberately replaying into a simulated 500 and inspecting the captured
+  page.
+
 The result contract (`replay/outcomes.py`) is a closed three-way type:
 `success` (with typed outputs), `business_outcome` (named, with a
-description -- never conflated with a crash), or `failure` (step id,
-expected vs. observed, a debuggable message). This was validated for real,
-not just designed: replaying the same artifact against member `10001`
-(success, correct balance extracted), `40300` (business outcome:
-permission denied), and `00000` (business outcome: not found) all produced
-the correct, distinct result types against the live mock app.
-
-Recoverable conditions are handled *inside* a step via `RetryPolicy`; if
-retries are exhausted it becomes a `failure`, not a silent hang. Risky steps
-(see Section 6) are checked before execution, independent of locator
-resolution.
+description), or `failure` (step id, expected vs. observed, message,
+screenshot). This was validated for real end to end across two artifacts:
+`lookup_balance` (success with extracted balance, not-found and
+permission-denied business outcomes) and `open_sub_account` (risky-step
+block, interstitial auto-dismissal into success, two validation-error
+business outcomes, and a genuine hard failure on a simulated backend crash).
 
 ## 4. Heterogeneity & multi-tenant
 
@@ -118,8 +136,10 @@ be waiting on a human by design.
 `SessionControl.request_intervention()` writes `intervention.json`
 (goal, step, reason, screenshot, URL) into the run's evidence directory and
 blocks, polling for `resume.signal`. The mock operator CLI
-(`operator status` / `operator resume`) only reads and writes those same
-files -- it never gets a reference to the running process. This matters:
+(`operator status` / `operator resume`) and the Mission Control dashboard
+(`dashboard/`, a read-mostly view over the same `artifacts/`/`evidence/`
+directories) both only read and write those same files -- neither gets a
+reference to the running process. This matters:
 **the browser window itself never closes or hands off to anything new**; a
 human at the same machine simply drives the same visible, already-open
 Chromium window while automation is paused. That is the real "same session,
@@ -172,8 +192,9 @@ next":
 * **Known-outcome *authoring* is manual, not LLM-discovered.** The
   discovery loop records steps and a checkpoint automatically; a human
   (or a follow-up prompt asking the model "what other outcomes did you
-  notice?") currently adds `known_outcomes` afterward. Auto-proposing these
-  during discovery is the single highest-value next step.
+  notice?") currently adds `known_outcomes` and `interstitials` afterward.
+  Auto-proposing these during discovery is the single highest-value next
+  step.
 * **Output/param type inference is string-only.** The schema supports
   number/boolean, but discovery always emits `"string"` today; a
   post-discovery typing pass would close this cheaply.
@@ -187,7 +208,12 @@ next":
   if we added it.
 * **No real desktop or multi-tenant implementation** -- out of scope per
   the brief; Section 4 is the design answer.
-* **The operator surface is a bare CLI**, not a console -- explicitly
-  allowed by the scope note; the real part is the control-transfer
-  mechanism underneath it, not its UI.
+* **The operator surface is a dashboard, not a co-browsing console** --
+  explicitly allowed by the scope note; it reads artifacts/evidence from
+  disk and can trigger the one real resume action, but it is not a
+  real-time view into the live browser session itself.
 * **Risk classification is heuristic, not semantic** -- see Section 6.
+* **`allowlist_scope` on the artifact is declarative only** -- it documents
+  the routes a capability expects to touch, but only the global
+  `config/allowlist.yml` policy is actually enforced at replay time today;
+  cross-checking the two is a cheap follow-up.

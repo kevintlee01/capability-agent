@@ -1,7 +1,4 @@
-"""Prove the pause/cede-control/resume mechanism actually blocks and resumes,
-using the real file-based control-transfer seam (no LLM, no browser needed
-to validate the transfer logic itself).
-"""
+"""Prove the pause/cede-control/resume mechanism actually blocks and resumes, using the real file-based control-transfer seam (no LLM/browser needed)."""
 import threading
 import time
 

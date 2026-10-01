@@ -1,9 +1,4 @@
-"""Classify actions as safe/reversible vs risky/irreversible, and police them.
-
-Policy: risky actions are never auto-confirmed by the LLM during discovery,
-and during replay they execute only on 'approved' artifacts (see schema
-status field) -- draft artifacts require an explicit --allow-risky flag.
-"""
+"""Classify actions as safe/reversible vs risky/irreversible: risky steps replay only on 'approved' artifacts unless --allow-risky is passed."""
 from capability_agent.artifact.schema import ActionType, RiskLevel, Step
 
 READ_ONLY_ACTIONS = {ActionType.NAVIGATE, ActionType.EXTRACT, ActionType.WAIT_FOR, ActionType.ASSERT_CHECKPOINT}

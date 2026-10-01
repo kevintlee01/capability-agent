@@ -1,8 +1,4 @@
-"""Hand-author 'open_sub_account' to exercise risky-step blocking, interstitial
-dismissal, validation-error business outcomes, and a genuine hard failure --
-the paths the lookup_balance artifact doesn't touch. Not the required real
-discovery-run evidence -- see README for that.
-"""
+"""Hand-author 'open_sub_account' to exercise risky-step blocking, interstitial dismissal, validation business outcomes, and a hard failure."""
 from capability_agent.artifact.schema import (
     ActionType, CapabilityArtifact, Checkpoint, InterstitialHandler, Locator,
     LocatorKind, LocatorStrategy, OutcomeDefinition, Param, Step, SurfaceType,

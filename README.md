@@ -78,6 +78,30 @@ Try `--param member_id=00000` (business outcome: not found) or
 `--param member_id=40300` (business outcome: permission denied) to see the
 result-type taxonomy in action without touching the LLM at all.
 
+**Second capability, exercising the rest of the error taxonomy:**
+`open_sub_account` (hand-authored like `lookup_balance`, see
+`scripts/author_open_sub_account_artifact.py`) demonstrates the paths
+`lookup_balance` doesn't touch:
+
+```bash
+# risky step BLOCKED by default (artifact status is draft)
+uv run python -m capability_agent.cli replay --name open_sub_account \
+  --param member_id=20002 --param account_type=Savings --param nickname="Rainy Day" --param initial_deposit=50
+
+# same call with --allow-risky: SUCCESS
+... --allow-risky
+
+# member 60000: fraud-hold interstitial is detected and auto-dismissed, still SUCCESS
+... --param member_id=60000 --allow-risky
+
+# member 70000: simulated backend crash, a genuine hard FAILURE (not a declared outcome)
+... --param member_id=70000 --allow-risky
+
+# blank nickname / zero deposit: two distinct validation-error BUSINESS OUTCOMES
+... --param nickname="" --allow-risky
+... --param initial_deposit=0 --allow-risky
+```
+
 **List saved artifacts:**
 
 ```bash

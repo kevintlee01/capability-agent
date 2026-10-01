@@ -25,6 +25,7 @@ def index(request: Request):
         "total_runs": len(runs),
         "pending_count": sum(1 for r in runs if r["pending_escalation"]),
         "distribution": outcome_distribution(),
+        "active": "overview",
     })
 
 

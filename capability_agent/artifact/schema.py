@@ -1,9 +1,4 @@
-"""The capability artifact schema: a typed, versioned, replayable flow.
-
-Design intent: a capability artifact is a contract between three readers --
-a human reviewer, the deterministic replay engine, and a calling AI agent.
-None of them should need the raw LLM transcript to understand it.
-"""
+"""The capability artifact schema: a typed, versioned, replayable flow contract for a human reviewer, the replay engine, and a calling AI agent."""
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -110,11 +105,7 @@ class Checkpoint(BaseModel):
 
 
 class OutcomeDefinition(BaseModel):
-    """A known, named business outcome this capability can legitimately hit.
-
-    These are discovered during the LLM run, not inferred generically by
-    replay -- only the domain run knows "no such member" is a valid answer.
-    """
+    """A known, named business outcome this capability can legitimately hit, discovered by the LLM run or a human reviewer."""
 
     name: str
     detector: Locator
@@ -123,12 +114,7 @@ class OutcomeDefinition(BaseModel):
 
 
 class InterstitialHandler(BaseModel):
-    """A recoverable, known interruption: detect it, dismiss it, keep going.
-
-    Distinct from OutcomeDefinition on purpose: an interstitial is noise the
-    flow can recover from (e.g. a fraud-review hold screen), not an answer
-    the caller needs reported. Checked before every step, same as outcomes.
-    """
+    """A recoverable, known interruption (e.g. a fraud hold): detect it, dismiss it, and keep going -- not an outcome to report."""
 
     name: str
     detector: Locator

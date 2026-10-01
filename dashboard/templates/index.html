@@ -1,109 +1,121 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="mb-8">
-  <h1 class="text-2xl font-bold text-white">Overview</h1>
-  <p class="text-slate-400 text-sm mt-1">Everything this system has discovered and replayed, in one place.</p>
+<div class="mb-8 flex items-end justify-between">
+  <div>
+    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Overview</h1>
+    <p class="text-slate-500 text-sm mt-1">Everything this system has discovered and replayed, in one place.</p>
+  </div>
 </div>
 
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-  <div class="glass rounded-xl p-5">
-    <div class="text-slate-400 text-xs uppercase tracking-wide">Capabilities</div>
-    <div class="text-3xl font-bold text-white mt-1">{{ artifacts|length }}</div>
-  </div>
-  <div class="glass rounded-xl p-5">
-    <div class="text-slate-400 text-xs uppercase tracking-wide">Total Runs</div>
-    <div class="text-3xl font-bold text-white mt-1">{{ total_runs }}</div>
-  </div>
-  <div class="glass rounded-xl p-5">
-    <div class="text-slate-400 text-xs uppercase tracking-wide">Pending Escalations</div>
-    <div class="text-3xl font-bold mt-1 {% if pending_count > 0 %}text-amber-400{% else %}text-white{% endif %}">{{ pending_count }}</div>
-  </div>
-  <div class="glass rounded-xl p-5">
-    <div class="text-slate-400 text-xs uppercase tracking-wide">Success Rate</div>
-    <div class="text-3xl font-bold text-emerald-400 mt-1">
-      {% set total = distribution.success + distribution.business_outcome + distribution.failure %}
-      {{ "%.0f"|format((distribution.success / total * 100) if total else 0) }}%
+  <div class="bg-white rounded-2xl p-5 shadow-card border border-slate-100">
+    <div class="flex items-center gap-2 text-slate-400 text-xs font-semibold uppercase tracking-wide">
+      <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Capabilities
     </div>
+    <div class="text-3xl font-extrabold text-slate-900 mt-2">{{ artifacts|length }}</div>
+  </div>
+  <div class="bg-white rounded-2xl p-5 shadow-card border border-slate-100">
+    <div class="flex items-center gap-2 text-slate-400 text-xs font-semibold uppercase tracking-wide">
+      <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      Total Runs
+    </div>
+    <div class="text-3xl font-extrabold text-slate-900 mt-2">{{ total_runs }}</div>
+  </div>
+  <div class="bg-white rounded-2xl p-5 shadow-card border border-slate-100">
+    <div class="flex items-center gap-2 text-slate-400 text-xs font-semibold uppercase tracking-wide">
+      <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9L2.6 17a1.5 1.5 0 001.3 2.2h16.2a1.5 1.5 0 001.3-2.2L13.7 3.9a1.5 1.5 0 00-2.6 0z"/></svg>
+      Pending Escalations
+    </div>
+    <div class="text-3xl font-extrabold mt-2 {% if pending_count > 0 %}text-amber-500{% else %}text-slate-900{% endif %}">{{ pending_count }}</div>
+  </div>
+  <div class="bg-white rounded-2xl p-5 shadow-card border border-slate-100">
+    <div class="flex items-center gap-2 text-slate-400 text-xs font-semibold uppercase tracking-wide">
+      <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+      Success Rate
+    </div>
+    {% set total = distribution.success + distribution.business_outcome + distribution.failure %}
+    <div class="text-3xl font-extrabold text-emerald-500 mt-2">{{ "%.0f"|format((distribution.success / total * 100) if total else 0) }}%</div>
   </div>
 </div>
 
 <div class="grid md:grid-cols-3 gap-6 mb-10">
-  <div class="md:col-span-2 glass rounded-xl p-6">
-    <h2 id="artifacts" class="text-lg font-semibold text-white mb-4">Capabilities</h2>
+  <div id="capabilities" class="md:col-span-2 bg-white rounded-2xl p-6 shadow-card border border-slate-100">
+    <h2 class="text-lg font-bold text-slate-900 mb-4">Capabilities</h2>
     {% if not artifacts %}
-    <p class="text-slate-400 text-sm">No artifacts saved yet. Run <code class="text-brand-400">discover</code> or author one with a script.</p>
+    <p class="text-slate-400 text-sm">No artifacts saved yet. Run <code class="text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded">discover</code> or author one with a script.</p>
     {% endif %}
     <div class="space-y-3">
       {% for a in artifacts %}
-      <a href="/artifacts/{{ a.name }}/{{ a.version }}" class="block rounded-lg border border-white/10 hover:border-brand-400/50 hover:bg-white/5 transition p-4">
+      <a href="/artifacts/{{ a.name }}/{{ a.version }}" class="card-hover block rounded-xl border border-slate-200 p-4">
         <div class="flex items-center justify-between">
-          <div class="font-medium text-white">{{ a.name }} <span class="text-slate-500 text-xs">v{{ a.version }}</span></div>
-          <span class="text-xs px-2 py-0.5 rounded-full {% if a.status == 'approved' %}bg-emerald-500/20 text-emerald-300{% else %}bg-amber-500/20 text-amber-300{% endif %}">{{ a.status }}</span>
+          <div class="font-semibold text-slate-900">{{ a.name }} <span class="text-slate-400 font-normal text-xs">v{{ a.version }}</span></div>
+          <span class="text-xs px-2.5 py-1 rounded-full font-medium {% if a.status == 'approved' %}bg-emerald-50 text-emerald-700{% else %}bg-amber-50 text-amber-700{% endif %}">{{ a.status }}</span>
         </div>
-        <p class="text-slate-400 text-sm mt-1">{{ a.description }}</p>
-        <div class="flex gap-4 mt-3 text-xs text-slate-500">
+        <p class="text-slate-500 text-sm mt-1.5">{{ a.description }}</p>
+        <div class="flex gap-4 mt-3 text-xs text-slate-400 font-medium">
           <span>{{ a.step_count }} steps</span>
           <span>{{ a.param_count }} params</span>
           <span>{{ a.output_count }} outputs</span>
           <span>{{ a.outcome_count }} known outcomes</span>
-          <span class="ml-auto uppercase tracking-wide">{{ a.created_by }}</span>
+          <span class="ml-auto uppercase tracking-wide text-slate-300">{{ a.created_by }}</span>
         </div>
       </a>
       {% endfor %}
     </div>
   </div>
 
-  <div class="glass rounded-xl p-6">
-    <h2 class="text-lg font-semibold text-white mb-4">Outcome Mix</h2>
-    <div style="height: 220px;">
+  <div class="bg-white rounded-2xl p-6 shadow-card border border-slate-100">
+    <h2 class="text-lg font-bold text-slate-900 mb-4">Outcome Mix</h2>
+    <div style="height: 200px;">
       <canvas id="outcomeChart"></canvas>
     </div>
-    <div class="grid grid-cols-2 gap-2 mt-4 text-xs text-slate-400">
-      <div><span class="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-1"></span>Success {{ distribution.success }}</div>
-      <div><span class="inline-block w-2 h-2 rounded-full bg-amber-400 mr-1"></span>Business outcome {{ distribution.business_outcome }}</div>
-      <div><span class="inline-block w-2 h-2 rounded-full bg-rose-400 mr-1"></span>Failure {{ distribution.failure }}</div>
-      <div><span class="inline-block w-2 h-2 rounded-full bg-slate-500 mr-1"></span>Other {{ distribution.other }}</div>
+    <div class="grid grid-cols-2 gap-2 mt-5 text-xs text-slate-500">
+      <div><span class="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-1.5"></span>Success {{ distribution.success }}</div>
+      <div><span class="inline-block w-2 h-2 rounded-full bg-amber-400 mr-1.5"></span>Business outcome {{ distribution.business_outcome }}</div>
+      <div><span class="inline-block w-2 h-2 rounded-full bg-rose-400 mr-1.5"></span>Failure {{ distribution.failure }}</div>
+      <div><span class="inline-block w-2 h-2 rounded-full bg-slate-300 mr-1.5"></span>Other {{ distribution.other }}</div>
     </div>
   </div>
 </div>
 
-<div class="glass rounded-xl p-6">
-  <h2 id="runs" class="text-lg font-semibold text-white mb-4">Recent Run Evidence</h2>
+<div id="runs" class="bg-white rounded-2xl p-6 shadow-card border border-slate-100">
+  <h2 class="text-lg font-bold text-slate-900 mb-4">Recent Run Evidence</h2>
   {% if not runs %}
-  <p class="text-slate-400 text-sm">No runs yet. Run <code class="text-brand-400">discover</code> or <code class="text-brand-400">replay</code> to generate evidence.</p>
+  <p class="text-slate-400 text-sm">No runs yet. Run <code class="text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded">discover</code> or <code class="text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded">replay</code> to generate evidence.</p>
   {% endif %}
   <table class="w-full text-sm">
     <thead>
-      <tr class="text-left text-slate-500 text-xs uppercase tracking-wide border-b border-white/10">
-        <th class="py-2 pr-4">Run</th>
-        <th class="py-2 pr-4">Type</th>
-        <th class="py-2 pr-4">Status</th>
-        <th class="py-2 pr-4">Started</th>
-        <th class="py-2"></th>
+      <tr class="text-left text-slate-400 text-xs font-semibold uppercase tracking-wide border-b border-slate-100">
+        <th class="py-2.5 pr-4">Run</th>
+        <th class="py-2.5 pr-4">Type</th>
+        <th class="py-2.5 pr-4">Status</th>
+        <th class="py-2.5 pr-4">Started</th>
+        <th class="py-2.5"></th>
       </tr>
     </thead>
     <tbody>
       {% for r in runs %}
-      <tr class="border-b border-white/5 hover:bg-white/5">
-        <td class="py-2 pr-4 font-mono text-xs text-slate-300">{{ r.run_id }}</td>
-        <td class="py-2 pr-4">
-          <span class="text-xs px-2 py-0.5 rounded-full {% if r.run_type == 'discovery' %}bg-fuchsia-500/20 text-fuchsia-300{% else %}bg-sky-500/20 text-sky-300{% endif %}">{{ r.run_type }}</span>
+      <tr class="border-b border-slate-50 hover:bg-slate-50/70 transition">
+        <td class="py-3 pr-4 font-mono text-xs text-slate-600">{{ r.run_id }}</td>
+        <td class="py-3 pr-4">
+          <span class="text-xs px-2.5 py-1 rounded-full font-medium {% if r.run_type == 'discovery' %}bg-fuchsia-50 text-fuchsia-700{% else %}bg-sky-50 text-sky-700{% endif %}">{{ r.run_type }}</span>
         </td>
-        <td class="py-2 pr-4">
+        <td class="py-3 pr-4">
           {% if r.pending_escalation %}
-          <span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 animate-pulse">needs human</span>
+          <span class="text-xs px-2.5 py-1 rounded-full font-medium bg-amber-50 text-amber-700 animate-pulse">needs human</span>
           {% elif r.status == 'success' %}
-          <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">success</span>
+          <span class="text-xs px-2.5 py-1 rounded-full font-medium bg-emerald-50 text-emerald-700">success</span>
           {% elif r.status == 'business_outcome' %}
-          <span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300">business outcome</span>
+          <span class="text-xs px-2.5 py-1 rounded-full font-medium bg-amber-50 text-amber-700">business outcome</span>
           {% elif r.status == 'failure' %}
-          <span class="text-xs px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300">failure</span>
+          <span class="text-xs px-2.5 py-1 rounded-full font-medium bg-rose-50 text-rose-700">failure</span>
           {% else %}
-          <span class="text-xs px-2 py-0.5 rounded-full bg-slate-500/20 text-slate-300">{{ r.status }}</span>
+          <span class="text-xs px-2.5 py-1 rounded-full font-medium bg-slate-100 text-slate-600">{{ r.status }}</span>
           {% endif %}
         </td>
-        <td class="py-2 pr-4 text-slate-400 text-xs">{{ r.started_at }}</td>
-        <td class="py-2 text-right"><a href="/runs/{{ r.run_id }}" class="text-brand-400 hover:text-brand-300 text-xs font-medium">View &rarr;</a></td>
+        <td class="py-3 pr-4 text-slate-400 text-xs">{{ r.started_at }}</td>
+        <td class="py-3 text-right"><a href="/runs/{{ r.run_id }}" class="text-brand-600 hover:text-brand-700 text-xs font-semibold">View &rarr;</a></td>
       </tr>
       {% endfor %}
     </tbody>
@@ -117,11 +129,12 @@ new Chart(document.getElementById('outcomeChart'), {
     labels: ['Success', 'Business outcome', 'Failure', 'Other'],
     datasets: [{
       data: [{{ distribution.success }}, {{ distribution.business_outcome }}, {{ distribution.failure }}, {{ distribution.other }}],
-      backgroundColor: ['#34d399', '#fbbf24', '#fb7185', '#64748b'],
-      borderWidth: 0,
+      backgroundColor: ['#34d399', '#fbbf24', '#fb7185', '#cbd5e1'],
+      borderWidth: 3,
+      borderColor: '#ffffff',
     }]
   },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+  options: { responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: { legend: { display: false } } }
 });
 </script>
 {% endblock %}
