@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>No Such Member</h2>
+<div class="card">
+<span class="badge badge-warn">Not Found</span>
+<h2 style="border:none; padding-bottom:0;">No Such Member</h2>
 <p>No member record exists for ID {{ member_id }}.</p>
-<p><a href="/">Back to Search</a></p>
+<a class="btn-link" href="/">&larr; Back to Search</a>
+</div>
 {% endblock %}

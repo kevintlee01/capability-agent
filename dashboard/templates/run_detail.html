@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+{% if not run %}
+<p class="text-rose-400">Run not found.</p>
+{% else %}
+<a href="/" class="text-slate-400 hover:text-white text-sm">&larr; Back to overview</a>
+<h1 class="text-2xl font-bold text-white mt-4 mb-1 font-mono">{{ run.run_id }}</h1>
+
+{% if run.intervention %}
+<div class="glass border-amber-400/40 rounded-xl p-6 my-6 border-2">
+  <div class="flex items-center gap-2 mb-2">
+    <span class="h-2 w-2 rounded-full bg-amber-400 animate-pulse"></span>
+    <h2 class="text-amber-300 font-semibold">Escalation pending &mdash; human needed</h2>
+  </div>
+  <p class="text-slate-300 text-sm"><span class="text-slate-500">Goal:</span> {{ run.intervention.goal }}</p>
+  <p class="text-slate-300 text-sm"><span class="text-slate-500">Stuck at step:</span> {{ run.intervention.step_id }}</p>
+  <p class="text-slate-300 text-sm"><span class="text-slate-500">Reason:</span> {{ run.intervention.reason }}</p>
+  <p class="text-slate-300 text-sm"><span class="text-slate-500">URL:</span> <span class="font-mono text-xs">{{ run.intervention.current_url }}</span></p>
+  {% if run.intervention.screenshot_path %}
+  <img src="/{{ run.intervention.screenshot_path }}" class="mt-3 rounded-lg border border-white/10 max-w-xl">
+  {% endif %}
+  <p class="text-slate-400 text-xs mt-4">Drive the live browser window by hand, then record what you did and resume:</p>
+  <form method="post" action="/runs/{{ run.run_id }}/resume" class="mt-2 flex gap-2">
+    <input type="text" name="note" placeholder="what you did, e.g. dismissed the fraud hold manually"
+           class="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500">
+    <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg">Resume</button>
+  </form>
+</div>
+{% endif %}
+
+{% if run.resume_note %}
+<div class="glass rounded-xl p-4 my-4 border border-emerald-400/30">
+  <p class="text-emerald-300 text-sm">Resumed by operator: "{{ run.resume_note.note }}"</p>
+</div>
+{% endif %}
+
+{% if run.summary %}
+<div class="glass rounded-xl p-6 my-6">
+  <h2 class="text-lg font-semibold text-white mb-2">Summary</h2>
+  <pre class="text-xs text-slate-300 overflow-x-auto">{{ run.summary }}</pre>
+</div>
+{% endif %}
+
+<div class="glass rounded-xl p-6 my-6">
+  <h2 class="text-lg font-semibold text-white mb-4">Event Log</h2>
+  <div class="space-y-2 max-h-[32rem] overflow-y-auto pr-2">
+    {% for e in run.events %}
+    <div class="text-xs border-b border-white/5 pb-2">
+      <span class="text-slate-500 font-mono">{{ e.ts }}</span>
+      <span class="ml-2 px-1.5 py-0.5 rounded bg-white/10 text-slate-200 font-mono">{{ e.type }}</span>
+      <pre class="text-slate-400 mt-1 whitespace-pre-wrap">{{ e.detail }}</pre>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% if run.screenshots %}
+<div class="glass rounded-xl p-6 my-6">
+  <h2 class="text-lg font-semibold text-white mb-4">Screenshots</h2>
+  <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+    {% for s in run.screenshots %}
+    <img src="/evidence/{{ run.run_id }}/screenshots/{{ s }}" class="rounded-lg border border-white/10">
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}

@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Fraud Review Hold</h2>
+<div class="card">
+<span class="badge badge-warn">Fraud Review Hold</span>
+<h2 style="border:none; padding-bottom:0;">Fraud Review Hold</h2>
 <p>This member's account is flagged for manual fraud review. Proceed anyway?</p>
 <form method="post" action="/member/{{ member.member_id }}/open-subaccount/confirm-hold">
 <input type="hidden" name="account_type" value="{{ account_type }}">
@@ -8,5 +10,6 @@
 <input type="hidden" name="initial_deposit" value="{{ initial_deposit }}">
 <input type="submit" value="Proceed Anyway">
 </form>
-<p><a href="/member/{{ member.member_id }}">Cancel</a></p>
+<a class="btn-link" href="/member/{{ member.member_id }}">Cancel</a>
+</div>
 {% endblock %}

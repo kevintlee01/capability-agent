@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Access Denied</h2>
+<div class="card">
+<span class="badge badge-danger">Access Denied</span>
+<h2 style="border:none; padding-bottom:0;">Access Denied</h2>
 <p>Teller account lacks permission to view member {{ member_id }}. This record is restricted.</p>
-<p><a href="/">Back to Search</a></p>
+<a class="btn-link" href="/">&larr; Back to Search</a>
+</div>
 {% endblock %}

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+{% if not artifact %}
+<p class="text-rose-400">Artifact {{ name }}@{{ version }} not found.</p>
+{% else %}
+<a href="/" class="text-slate-400 hover:text-white text-sm">&larr; Back to overview</a>
+<div class="flex items-center justify-between mt-4 mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-white">{{ artifact.name }} <span class="text-slate-500 text-base">v{{ artifact.version }}</span></h1>
+    <p class="text-slate-400 text-sm mt-1">{{ artifact.description }}</p>
+  </div>
+  <span class="text-xs px-3 py-1 rounded-full {% if artifact.status == 'approved' %}bg-emerald-500/20 text-emerald-300{% else %}bg-amber-500/20 text-amber-300{% endif %}">{{ artifact.status }}</span>
+</div>
+
+<div class="grid md:grid-cols-4 gap-4 mb-8 text-sm">
+  <div class="glass rounded-xl p-4"><div class="text-slate-500 text-xs">Target App</div><div class="text-white mt-1">{{ artifact.target_app }}</div></div>
+  <div class="glass rounded-xl p-4"><div class="text-slate-500 text-xs">Surface</div><div class="text-white mt-1">{{ artifact.surface_type }}</div></div>
+  <div class="glass rounded-xl p-4"><div class="text-slate-500 text-xs">Base URL</div><div class="text-white mt-1 truncate">{{ artifact.base_url }}</div></div>
+  <div class="glass rounded-xl p-4"><div class="text-slate-500 text-xs">Created By</div><div class="text-white mt-1">{{ artifact.created_by }}</div></div>
+</div>
+
+<div class="grid md:grid-cols-2 gap-6 mb-8">
+  <div class="glass rounded-xl p-6">
+    <h2 class="text-lg font-semibold text-white mb-3">Input Parameters</h2>
+    {% for p in artifact.params %}
+    <div class="text-sm py-2 border-b border-white/5 last:border-0">
+      <span class="font-mono text-brand-400">{{ p.name }}</span>
+      <span class="text-slate-500"> : {{ p.type }}</span>
+      {% if p.required %}<span class="text-rose-400 text-xs ml-1">required</span>{% endif %}
+      <p class="text-slate-400 text-xs mt-0.5">{{ p.description }}</p>
+    </div>
+    {% else %}<p class="text-slate-500 text-sm">None</p>{% endfor %}
+  </div>
+  <div class="glass rounded-xl p-6">
+    <h2 class="text-lg font-semibold text-white mb-3">Outputs</h2>
+    {% for o in artifact.outputs %}
+    <div class="text-sm py-2 border-b border-white/5 last:border-0">
+      <span class="font-mono text-emerald-400">{{ o.name }}</span>
+      <span class="text-slate-500"> : {{ o.type }}</span>
+      <p class="text-slate-400 text-xs mt-0.5">{{ o.description }}</p>
+    </div>
+    {% else %}<p class="text-slate-500 text-sm">None</p>{% endfor %}
+  </div>
+</div>
+
+<div class="glass rounded-xl p-6 mb-8">
+  <h2 class="text-lg font-semibold text-white mb-4">Steps</h2>
+  <div class="space-y-3">
+    {% for s in artifact.steps %}
+    <div class="flex gap-4 items-start">
+      <div class="h-6 w-6 rounded-full bg-brand-600/30 text-brand-300 text-xs flex items-center justify-center shrink-0 mt-0.5">{{ s.step_id }}</div>
+      <div class="flex-1 border-b border-white/5 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xs px-2 py-0.5 rounded bg-white/10 text-slate-200 font-mono">{{ s.action }}</span>
+          {% if s.risk_level == 'risky' %}<span class="text-xs px-2 py-0.5 rounded bg-rose-500/20 text-rose-300">risky</span>{% endif %}
+          <span class="text-slate-300 text-sm">{{ s.description }}</span>
+        </div>
+        {% if s.locator %}
+        <div class="text-xs text-slate-500 mt-1 font-mono">
+          primary: {{ s.locator.primary.kind }}={{ s.locator.primary.value }}{% if s.locator.primary.role %} (role={{ s.locator.primary.role }}){% endif %}{% if s.locator.primary.nth is not none %} [nth={{ s.locator.primary.nth }}]{% endif %}
+          {% if s.locator.fallbacks %}&rarr; fallback: {{ s.locator.fallbacks[0].kind }}={{ s.locator.fallbacks[0].value }}{% endif %}
+        </div>
+        {% endif %}
+        {% if s.value %}<div class="text-xs text-slate-500 mt-1">value: <span class="font-mono">{{ s.value }}</span></div>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="grid md:grid-cols-2 gap-6 mb-8">
+  <div class="glass rounded-xl p-6">
+    <h2 class="text-lg font-semibold text-white mb-3">Checkpoint</h2>
+    <p class="text-slate-300 text-sm">{{ artifact.checkpoint.description }}</p>
+    <p class="text-xs text-slate-500 mt-2 font-mono">{{ artifact.checkpoint.locator.primary.kind }}={{ artifact.checkpoint.locator.primary.value }}</p>
+  </div>
+  <div class="glass rounded-xl p-6">
+    <h2 class="text-lg font-semibold text-white mb-3">Known Business Outcomes</h2>
+    {% for o in artifact.known_outcomes %}
+    <div class="text-sm py-2 border-b border-white/5 last:border-0">
+      <span class="font-mono text-amber-400">{{ o.name }}</span>
+      <p class="text-slate-400 text-xs mt-0.5">{{ o.description }}</p>
+    </div>
+    {% else %}<p class="text-slate-500 text-sm">None declared</p>{% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

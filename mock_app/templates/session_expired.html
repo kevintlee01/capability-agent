@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Session Expired</h2>
+<div class="card">
+<span class="badge badge-warn">Session Timeout</span>
+<h2 style="border:none; padding-bottom:0;">Session Expired</h2>
 <p>Your teller session has timed out. Please log in again to continue.</p>
-<p><a href="/">Return to Login</a></p>
+<a class="btn-link" href="/">&larr; Return to Login</a>
+</div>
 {% endblock %}

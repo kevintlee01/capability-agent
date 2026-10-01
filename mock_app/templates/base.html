@@ -1,11 +1,199 @@
+<!doctype html>
 <html>
-<head><title>Meridian Credit Union - Teller Console</title></head>
-<body bgcolor="#ECECEC">
-<table width="100%" cellpadding="4" cellspacing="0" border="0" bgcolor="#003366">
-<tr><td><font color="white" size="4"><b>MERIDIAN CREDIT UNION - INTERNAL TELLER CONSOLE</b></font></td></tr>
-</table>
-<table width="100%" cellpadding="10"><tr><td>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meridian Credit Union - Teller Console</title>
+<style>
+  :root {
+    --navy-900: #0b1e3d;
+    --navy-800: #122a52;
+    --navy-700: #1b3a6b;
+    --gold: #cda43d;
+    --gold-light: #e8cf8a;
+    --paper: #f3f5f9;
+    --card: #ffffff;
+    --ink: #1c2534;
+    --muted: #6b7788;
+    --green: #1f9d55;
+    --red: #d64545;
+    --amber: #d98c1f;
+    --border: #e1e5ec;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 15px;
+  }
+  .topbar {
+    background: linear-gradient(135deg, var(--navy-900) 0%, var(--navy-700) 100%);
+    padding: 18px 32px;
+    box-shadow: 0 2px 10px rgba(11,30,61,0.35);
+  }
+  .brand-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  .brand-title {
+    color: #fff;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 22px;
+    letter-spacing: 0.4px;
+    margin: 0;
+  }
+  .brand-title .accent { color: var(--gold-light); }
+  .brand-sub {
+    color: #c3cfe6;
+    font-size: 12px;
+    margin-top: 2px;
+    letter-spacing: 0.6px;
+  }
+  .session-chip {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(205,164,61,0.4);
+    color: var(--gold-light);
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 999px;
+  }
+  .page {
+    max-width: 960px;
+    margin: 32px auto;
+    padding: 0 24px 60px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(16,24,40,0.06), 0 1px 2px rgba(16,24,40,0.04);
+    padding: 28px 32px;
+    margin-bottom: 24px;
+  }
+  .card h2 {
+    font-family: Georgia, "Times New Roman", serif;
+    color: var(--navy-900);
+    margin-top: 0;
+    font-size: 21px;
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 12px;
+  }
+  .card h3 {
+    color: var(--navy-800);
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin: 24px 0 10px;
+  }
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  table.data {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  table.data tr:nth-child(even) { background: #fafbfd; }
+  table.data td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data tr:first-child td {
+    background: var(--navy-900);
+    color: #fff;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .field-table td { padding: 8px 4px; vertical-align: middle; }
+  .field-label { color: var(--muted); font-size: 13px; width: 160px; }
+  input[type="text"], select {
+    width: 100%;
+    max-width: 280px;
+    padding: 9px 12px;
+    border: 1px solid #c6cdd9;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+  }
+  input[type="text"]:focus, select:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(205,164,61,0.2);
+  }
+  input[type="submit"], .btn {
+    background: linear-gradient(135deg, var(--navy-800), var(--navy-700));
+    color: #fff;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+  }
+  input[type="submit"]:hover, .btn:hover { filter: brightness(1.1); }
+  .btn-link {
+    display: inline-block;
+    margin-top: 18px;
+    color: var(--navy-700);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .btn-link:hover { text-decoration: underline; }
+  .alert {
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 18px;
+  }
+  .alert-error { background: #fdecec; color: var(--red); border: 1px solid #f3c6c6; }
+  .alert-warn { background: #fdf3e3; color: var(--amber); border: 1px solid #f3dca6; }
+  .alert-success { background: #e9f8ef; color: var(--green); border: 1px solid #bfe9cf; }
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .badge-danger { background: #fdecec; color: var(--red); }
+  .badge-warn { background: #fdf3e3; color: var(--amber); }
+  .badge-ok { background: #e9f8ef; color: var(--green); }
+  .footer-note {
+    text-align: center;
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 32px;
+    letter-spacing: 0.3px;
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand-row">
+    <div>
+      <p class="brand-title">Meridian <span class="accent">Credit Union</span></p>
+      <div class="brand-sub">INTERNAL TELLER CONSOLE &middot; SYSTEM MC-7</div>
+    </div>
+    <div class="session-chip">Teller Window 4 &middot; Branch 0192</div>
+  </div>
+</div>
+<div class="page">
 {% block content %}{% endblock %}
-</td></tr></table>
+<div class="footer-note">Meridian Credit Union &middot; Internal Use Only &middot; Core Banking Platform v2.3</div>
+</div>
 </body>
 </html>

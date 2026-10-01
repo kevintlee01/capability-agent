@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="card">
 <h2>Member Search</h2>
-{% if error %}<p><font color="red">{{ error }}</font></p>{% endif %}
+{% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
 <form method="post" action="/search">
-<table border="0" cellpadding="3">
-<tr><td>Member ID:</td><td><input type="text" name="member_id"></td></tr>
+<table class="field-table">
+<tr><td class="field-label">Member ID</td><td><input type="text" name="member_id"></td></tr>
 <tr><td></td><td><input type="submit" value="Search"></td></tr>
 </table>
 </form>
+</div>
 {% endblock %}

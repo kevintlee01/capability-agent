@@ -84,7 +84,22 @@ result-type taxonomy in action without touching the LLM at all.
 uv run python -m capability_agent.cli list
 ```
 
-## 4. Human-in-the-loop escalation demo
+## 4. Mission Control dashboard (optional but pretty)
+
+A read-mostly dashboard for browsing saved capability artifacts and run
+evidence, with one real action: resuming a pending escalation.
+
+```bash
+uv run uvicorn dashboard.main:app --port 8900
+```
+
+Open http://127.0.0.1:8900/ -- it reads straight from `/artifacts` and
+`/evidence` on disk, so it reflects whatever `discover`/`replay` runs you've
+done. If a run is paused on a human (`intervention.json` present), its detail
+page shows the full context plus a working resume form, wired to the same
+`operator resume` call the CLI uses.
+
+## 5. Human-in-the-loop escalation demo
 
 When the agent (or replay, for a risky step) can't safely proceed, it writes
 `evidence/<run_id>/intervention.json` and blocks -- the same live browser
@@ -99,7 +114,7 @@ uv run python -m capability_agent.cli operator resume <run_id> --note "dismissed
 The run resumes in the same session and the human's navigation actions are
 captured into the evidence log. See `REPORT.md` section 5 for the design.
 
-## 5. Running the tests
+## 6. Running the tests
 
 ```bash
 uv run pytest -q
@@ -111,13 +126,13 @@ outcomes, and the escalation control-transfer mechanism itself (a real
 threaded test proves `request_intervention` blocks and resumes correctly --
 no LLM or browser required for that part).
 
-## 6. Running without live services
+## 7. Running without live services
 
 * Schema, guardrails, store, and escalation-control tests run with no
   external dependencies at all (no browser, no API key, no network).
 * `tests/test_mock_app.py` exercises the target app in-process via FastAPI's
   `TestClient` -- no server process needed.
-* Only `discover` (needs `OPENAI_API_KEY` + a live browser) and `replay`
+* Only `discover` (needs `GEMINI_API_KEY` + a live browser) and `replay`
   (needs a live browser, but no API key) touch Playwright.
 
 ## Project layout
@@ -134,6 +149,7 @@ capability_agent/
   surface/             the shared Playwright session + observation builder
   llm/                 swappable LLM provider interface
   cli.py               typer CLI: discover / replay / list / operator
+dashboard/            Mission Control: browse artifacts + run evidence
 config/allowlist.yml  the permitted domains/routes/actions
 artifacts/            saved capability artifacts (committed examples)
 evidence/             discovery + replay run logs (committed examples)
