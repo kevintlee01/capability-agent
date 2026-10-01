@@ -30,15 +30,18 @@ Requires Python 3.12+ and [`uv`](https://docs.astral.sh/uv/).
 
 ```bash
 uv sync
-uv run playwright install chromium
+uv run playwright install chromium firefox webkit
 cp .env.example .env   # then put your own GEMINI_API_KEY in .env (free tier: https://aistudio.google.com/apikey)
 ```
 
-LLM provider is pluggable (`capability_agent/llm/`) -- Gemini is the default
-since it has a free tier; OpenAI also works by setting `LLM_PROVIDER=openai`
-and `OPENAI_API_KEY` instead.
+LLM provider is pluggable (`capability_agent/llm/`) -- Gemini
+(`gemini-flash-lite-latest` by default) is the default since it has a free
+tier; OpenAI also works by setting `LLM_PROVIDER=openai` and
+`OPENAI_API_KEY` instead.
 
-No other services are required -- the target app is local.
+No other services are required -- the target app is local. Firefox and
+WebKit are only needed if you want to run the cross-browser test suite
+(Section 6); the product itself defaults to Chromium.
 
 ## 2. Run the mock target app
 
@@ -66,6 +69,13 @@ uv run python -m capability_agent.cli discover \
 This drives a real Chromium browser (set `HEADLESS=false` in `.env` to watch
 it), logs every observation/decision/action to `/evidence/discover-<id>/`,
 and on success writes a versioned artifact to `/artifacts/lookup_balance/`.
+
+Two genuine live Gemini discovery runs are committed as evidence so you can
+see this without burning API quota: `evidence/discover-ad48e232/` (member
+lookup -> savings balance, 4 steps) and `evidence/discover-f3307ed3/`
+(member lookup -> open a Checking sub-account -> confirmation, 7 steps,
+autonomously discovered end to end). Both logs show the raw LLM responses,
+reasoning, and actions, not a mocked transcript.
 
 **Deterministic replay (no LLM):**
 
@@ -144,11 +154,53 @@ captured into the evidence log. See `REPORT.md` section 5 for the design.
 uv run pytest -q
 ```
 
-25 tests cover the artifact schema, guardrails (allowlist/risk/redaction),
-the replay engine's templating and validation, the mock app's deterministic
-outcomes, and the escalation control-transfer mechanism itself (a real
-threaded test proves `request_intervention` blocks and resumes correctly --
-no LLM or browser required for that part).
+132 tests, 99% statement coverage (the only two uncovered lines are a
+`__main__` entrypoint guard and a deliberately-slow demo-only branch in the
+mock app). Coverage is measured against real, mostly end-to-end behavior --
+no LLM or browser calls are faked beyond a scripted fake LLM client standing
+in for the network call itself:
+
+* **Schema, guardrails, store, config, LLM client/factory, evidence logger,**
+  **CLI wiring, dashboard routes** -- fast, isolated unit tests (mocks only
+  at the actual network/SDK boundary).
+* **Discovery agent loop** -- a real Playwright browser against the real
+  mock app, driven by a scripted `FakeLLMClient`, covering success, failure,
+  escalation + resume, malformed LLM output, step-budget exhaustion and its
+  grace period (both recovering and giving up), every action type, and a
+  hard LLM crash.
+* **Replay engine** -- the real hand-authored artifacts replayed against a
+  real mock app instance: success with extracted output, all three
+  `lookup_balance` business outcomes, the risky-step gate (blocked, then
+  allowed with `--allow-risky`), fraud-hold interstitial auto-recovery, a
+  simulated hard backend failure, both `open_sub_account` validation
+  outcomes, and an allowlist rejection.
+* **Escalation control-transfer** -- a real threaded test proves
+  `request_intervention` blocks and resumes correctly via the same files a
+  human operator would touch.
+
+To get the coverage report yourself:
+
+```bash
+uv run coverage run -m pytest -q && uv run coverage report -m
+```
+
+Playwright's sync API runs through greenlets, which standard `coverage.py`
+tracing doesn't follow by default -- `pyproject.toml` sets
+`[tool.coverage.run] concurrency = ["greenlet", "thread"]` so Playwright-driven
+code (most of this project) is actually measured, not silently skipped.
+
+### Cross-browser
+
+```bash
+uv run pytest tests/test_cross_browser.py -v
+```
+
+The same deterministic replay flows (`lookup_balance` success,
+`open_sub_account` fraud-hold interstitial recovery) run against Chromium,
+Firefox, and WebKit via a `BrowserSession(engine=...)` parameter, proving the
+locator/retry/interstitial logic isn't accidentally Chromium-specific. This
+is a separate, slower file (6 real browser launches, ~2.5 minutes) kept out
+of the default fast loop on purpose.
 
 ## 7. Running without live services
 
