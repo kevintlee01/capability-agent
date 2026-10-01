@@ -11,7 +11,7 @@ from capability_agent.config import settings
 from capability_agent.discovery.agent_loop import DiscoveryAgent
 from capability_agent.escalation import operator_cli
 from capability_agent.guardrails.allowlist import AllowlistPolicy
-from capability_agent.llm.openai_client import OpenAIClient
+from capability_agent.llm.factory import build_llm_client
 from capability_agent.replay.engine import replay_artifact
 
 app = typer.Typer(help="Computer-use discovery + deterministic replay system.")
@@ -38,7 +38,7 @@ def discover(
 ):
     """Run a real LLM-driven discovery session and save the resulting artifact."""
     allowlist = AllowlistPolicy.load(Path(settings.allowlist_path))
-    llm = OpenAIClient(api_key=settings.openai_api_key, model_name=settings.openai_model)
+    llm = build_llm_client(settings)
     agent = DiscoveryAgent(
         llm=llm, allowlist=allowlist, base_url=settings.target_base_url,
         entry_path=entry_path, max_steps=max_steps, headless=headless,

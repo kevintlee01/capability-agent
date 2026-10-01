@@ -7,6 +7,9 @@ class Settings(BaseSettings):
 
     openai_api_key: str = ""
     openai_model: str = "gpt-4o"
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-2.0-flash"
+    llm_provider: str = "gemini"
     target_base_url: str = "http://127.0.0.1:8731"
     allowlist_path: str = "config/allowlist.yml"
     artifact_dir: str = "artifacts"

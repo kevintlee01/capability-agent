@@ -31,8 +31,12 @@ Requires Python 3.12+ and [`uv`](https://docs.astral.sh/uv/).
 ```bash
 uv sync
 uv run playwright install chromium
-cp .env.example .env   # then put your own OPENAI_API_KEY in .env
+cp .env.example .env   # then put your own GEMINI_API_KEY in .env (free tier: https://aistudio.google.com/apikey)
 ```
+
+LLM provider is pluggable (`capability_agent/llm/`) -- Gemini is the default
+since it has a free tier; OpenAI also works by setting `LLM_PROVIDER=openai`
+and `OPENAI_API_KEY` instead.
 
 No other services are required -- the target app is local.
 
