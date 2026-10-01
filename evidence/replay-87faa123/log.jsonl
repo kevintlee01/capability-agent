@@ -1,0 +1,9 @@
+{"ts": "2026-10-01T05:42:28.392717+00:00", "type": "run_started", "detail": {"run_type": "replay", "run_id": "replay-87faa123"}}
+{"ts": "2026-10-01T05:42:28.924808+00:00", "type": "step_executed", "detail": {"step_id": 1, "attempt": 1}}
+{"ts": "2026-10-01T05:42:28.997300+00:00", "type": "step_executed", "detail": {"step_id": 2, "attempt": 1}}
+{"ts": "2026-10-01T05:42:29.057590+00:00", "type": "step_executed", "detail": {"step_id": 3, "attempt": 1}}
+{"ts": "2026-10-01T05:42:29.087846+00:00", "type": "step_executed", "detail": {"step_id": 4, "attempt": 1}}
+{"ts": "2026-10-01T05:42:29.109134+00:00", "type": "step_executed", "detail": {"step_id": 5, "attempt": 1}}
+{"ts": "2026-10-01T05:42:29.124546+00:00", "type": "step_executed", "detail": {"step_id": 6, "attempt": 1}}
+{"ts": "2026-10-01T05:42:29.179608+00:00", "type": "step_executed", "detail": {"step_id": 7, "attempt": 1}}
+{"ts": "2026-10-01T05:42:29.215103+00:00", "type": "checkpoint_verified", "detail": {"outputs": {}}}
