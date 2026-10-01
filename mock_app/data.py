@@ -17,8 +17,7 @@ class Member:
     accounts: list[Account] = field(default_factory=list)
 
 
-# Special member IDs are deliberately reserved to deterministically trigger
-# specific runtime outcomes, so replay error-handling is reproducible on demand.
+# Special member IDs are reserved to deterministically trigger specific outcomes for reproducible replay testing.
 MEMBERS: dict[str, Member] = {
     "10001": Member(
         member_id="10001",

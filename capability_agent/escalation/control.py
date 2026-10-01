@@ -25,10 +25,7 @@ class EscalationContext:
 
 @dataclass
 class SessionControl:
-    """Lives in the discovery/replay process; the operator CLI talks to it
-    only through files on disk, so control can transfer without either side
-    holding a reference to the other's process.
-    """
+    """Lives in the discovery/replay process; the operator CLI only talks to it via files on disk."""
 
     run_id: str
     run_dir: Path
