@@ -184,7 +184,7 @@ captured into the evidence log. See `REPORT.md` section 5 for the design.
 uv run pytest -q
 ```
 
-138 tests (the fast default suite -- cross-browser is excluded by a pytest
+139 tests (the fast default suite -- cross-browser is excluded by a pytest
 marker, see below), 99% statement coverage (the only uncovered line across
 the entire codebase is the `if __name__ == "__main__":` CLI entrypoint
 guard, which is standard, universally-accepted-as-untestable boilerplate).
@@ -197,9 +197,14 @@ in for the network call itself:
   at the actual network/SDK boundary).
 * **Discovery agent loop** -- a real Playwright browser against the real
   mock app, driven by a scripted `FakeLLMClient`, covering success, failure,
-  escalation + resume, malformed LLM output, step-budget exhaustion and its
-  grace period (both recovering and giving up), every action type, and a
-  hard LLM crash.
+  escalation + resume, a proactive stuck-loop detector that escalates after
+  2 identical consecutive failures (and does not false-positive on 2
+  different ones), malformed LLM output, step-budget exhaustion and its
+  grace period (both recovering and giving up), every action type, a
+  hard LLM crash, and a full chained pipeline test that discovers an
+  artifact with a scripted LLM and then replays that exact artifact
+  LLM-free against two different parameter values -- proving the
+  discover-once/replay-many contract mechanically, not just by description.
 * **Replay engine** -- the real hand-authored artifacts replayed against a
   real mock app instance: success with extracted output, all three
   `lookup_balance` business outcomes, the risky-step gate (blocked, then

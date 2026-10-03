@@ -6,6 +6,7 @@ from pathlib import Path
 from capability_agent.discovery.agent_loop import DiscoveryAgent
 from capability_agent.escalation import operator_cli
 from capability_agent.guardrails.allowlist import AllowlistPolicy
+from capability_agent.replay.engine import replay_artifact
 
 
 class FakeLLMClient:
@@ -190,3 +191,20 @@ def test_discovery_hard_crash_in_llm_call_is_a_clean_failure(live_mock_app_url, 
     result = agent.run(name="demo", goal="goal", params={})
     assert result.status == "failed"
     assert "the LLM provider is down" in result.failure_reason
+
+
+def test_full_pipeline_discovered_artifact_replays_successfully_llm_free(live_mock_app_url, tmp_path):
+    decisions = [
+        {"reasoning": "fill member id", "action": "fill", "target_role": "textbox", "target_nth": 0, "value": "10001"},
+        {"reasoning": "search", "action": "click", "target_role": "button", "target_name": "Search"},
+        {"reasoning": "done", "action": "finish_success", "checkpoint_role": "heading", "checkpoint_name": "Member Detail"},
+    ]
+    agent = _agent(FakeLLMClient(decisions), live_mock_app_url, tmp_path)
+    discovery_result = agent.run(name="pipeline_demo", goal="look up member 10001", params={"member_id": "10001"})
+    assert discovery_result.status == "completed"
+
+    outcome = replay_artifact(discovery_result.artifact, {"member_id": "10001"}, _allowlist(), headless=True, evidence_base=str(tmp_path))
+    assert outcome.result_type == "success"
+
+    outcome_other_member = replay_artifact(discovery_result.artifact, {"member_id": "20002"}, _allowlist(), headless=True, evidence_base=str(tmp_path))
+    assert outcome_other_member.result_type == "success"
