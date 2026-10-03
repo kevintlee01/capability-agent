@@ -28,6 +28,8 @@ dev = [
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
+addopts = "-m 'not cross_browser'"
+markers = ["cross_browser: real browser launches across chromium/firefox/webkit (slow, excluded by default)"]
 
 [tool.coverage.run]
 concurrency = ["greenlet", "thread"]

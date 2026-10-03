@@ -1,0 +1,234 @@
+{
+  "artifact_id": "open_sub_account_demo-1cefa502",
+  "name": "open_sub_account_demo",
+  "version": "1.0.0",
+  "description": "Open a new Savings sub-account for member 20002 with nickname 'Demo Fund' and an initial deposit of 50, and reach the confirmation screen",
+  "target_app": "meridian-credit-union-mock",
+  "surface_type": "legacy_web",
+  "base_url": "http://127.0.0.1:8731",
+  "status": "draft",
+  "created_by": "llm_discovery",
+  "allowlist_scope": [],
+  "params": [
+    {
+      "name": "member_id",
+      "type": "string",
+      "required": true,
+      "description": "Input 'member_id'",
+      "example": "20002"
+    },
+    {
+      "name": "account_type",
+      "type": "string",
+      "required": true,
+      "description": "Input 'account_type'",
+      "example": "Savings"
+    },
+    {
+      "name": "nickname",
+      "type": "string",
+      "required": true,
+      "description": "Input 'nickname'",
+      "example": "Demo Fund"
+    },
+    {
+      "name": "initial_deposit",
+      "type": "string",
+      "required": true,
+      "description": "Input 'initial_deposit'",
+      "example": "50"
+    }
+  ],
+  "outputs": [],
+  "steps": [
+    {
+      "step_id": 1,
+      "action": "fill",
+      "description": "Enter the member ID '20002' into the member ID textbox to search for the member.",
+      "locator": {
+        "primary": {
+          "kind": "role",
+          "value": "",
+          "role": "textbox",
+          "nth": 0
+        },
+        "fallbacks": [],
+        "frame_path": []
+      },
+      "value": "{{params.member_id}}",
+      "extract_as": null,
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    },
+    {
+      "step_id": 2,
+      "action": "click",
+      "description": "Click the Search button to find member 20002",
+      "locator": {
+        "primary": {
+          "kind": "role",
+          "value": "Search",
+          "role": "button",
+          "nth": null
+        },
+        "fallbacks": [
+          {
+            "kind": "text",
+            "value": "Search",
+            "role": null,
+            "nth": null
+          }
+        ],
+        "frame_path": []
+      },
+      "value": null,
+      "extract_as": null,
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    },
+    {
+      "step_id": 3,
+      "action": "click",
+      "description": "Click on the Open Sub-Account link to start creating a new sub-account for member 20002.",
+      "locator": {
+        "primary": {
+          "kind": "role",
+          "value": "Open Sub-Account \u2192",
+          "role": "link",
+          "nth": null
+        },
+        "fallbacks": [
+          {
+            "kind": "text",
+            "value": "Open Sub-Account \u2192",
+            "role": null,
+            "nth": null
+          }
+        ],
+        "frame_path": []
+      },
+      "value": null,
+      "extract_as": null,
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    },
+    {
+      "step_id": 4,
+      "action": "fill",
+      "description": "Fill in the nickname 'Demo Fund' for the new savings sub-account.",
+      "locator": {
+        "primary": {
+          "kind": "role",
+          "value": "",
+          "role": "textbox",
+          "nth": 0
+        },
+        "fallbacks": [],
+        "frame_path": []
+      },
+      "value": "{{params.nickname}}",
+      "extract_as": null,
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    },
+    {
+      "step_id": 5,
+      "action": "fill",
+      "description": "Fill the initial deposit spinbutton with '50'",
+      "locator": {
+        "primary": {
+          "kind": "role",
+          "value": "",
+          "role": "spinbutton",
+          "nth": 0
+        },
+        "fallbacks": [],
+        "frame_path": []
+      },
+      "value": "{{params.initial_deposit}}",
+      "extract_as": null,
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    },
+    {
+      "step_id": 6,
+      "action": "click",
+      "description": "Click the 'Open Account' button to submit the sub-account creation form and reach the confirmation screen.",
+      "locator": {
+        "primary": {
+          "kind": "role",
+          "value": "Open Account",
+          "role": "button",
+          "nth": null
+        },
+        "fallbacks": [
+          {
+            "kind": "text",
+            "value": "Open Account",
+            "role": null,
+            "nth": null
+          }
+        ],
+        "frame_path": []
+      },
+      "value": null,
+      "extract_as": null,
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    }
+  ],
+  "checkpoint": {
+    "locator": {
+      "primary": {
+        "kind": "role",
+        "value": "Sub-Account Opened",
+        "role": "heading",
+        "nth": null
+      },
+      "fallbacks": [
+        {
+          "kind": "text",
+          "value": "Sub-Account Opened",
+          "role": null,
+          "nth": null
+        }
+      ],
+      "frame_path": []
+    },
+    "expected_text_contains": "Sub-Account Opened",
+    "description": "Checkpoint: heading 'Sub-Account Opened'"
+  },
+  "known_outcomes": [],
+  "interstitials": [],
+  "discovery_meta": {
+    "model": "gemini-flash-lite-latest",
+    "run_id": "discover-3a6003ed",
+    "step_count": 6,
+    "duration_ms": 7993,
+    "discovered_at": "2026-10-03T00:35:27.035761Z"
+  }
+}

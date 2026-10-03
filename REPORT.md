@@ -137,8 +137,10 @@ be waiting on a human by design.
 (goal, step, reason, screenshot, URL) into the run's evidence directory and
 blocks, polling for `resume.signal`. The mock operator CLI
 (`operator status` / `operator resume`) and the Mission Control dashboard
-(`dashboard/`, a read-mostly view over the same `artifacts/`/`evidence/`
-directories) both only read and write those same files -- neither gets a
+(`dashboard/`, mostly a read-only view over the same `artifacts/`/`evidence/`
+directories, plus demo-convenience buttons that just call the same
+`DiscoveryAgent`/`replay_artifact` functions the CLI does) both only read and
+write those same files for escalation purposes -- neither gets a
 reference to the running process. This matters:
 **the browser window itself never closes or hands off to anything new**; a
 human at the same machine simply drives the same visible, already-open

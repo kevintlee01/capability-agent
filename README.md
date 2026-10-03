@@ -165,8 +165,9 @@ captured into the evidence log. See `REPORT.md` section 5 for the design.
 uv run pytest -q
 ```
 
-132 tests, 99% statement coverage (the only two uncovered lines are a
-`__main__` entrypoint guard and a deliberately-slow demo-only branch in the
+133 tests (the fast default suite -- cross-browser is excluded by a pytest
+marker, see below), 99% statement coverage (the only two uncovered lines are
+a `__main__` entrypoint guard and a deliberately-slow demo-only branch in the
 mock app). Coverage is measured against real, mostly end-to-end behavior --
 no LLM or browser calls are faked beyond a scripted fake LLM client standing
 in for the network call itself:
@@ -188,6 +189,9 @@ in for the network call itself:
 * **Escalation control-transfer** -- a real threaded test proves
   `request_intervention` blocks and resumes correctly via the same files a
   human operator would touch.
+* **Dashboard write actions** -- `trigger_discover`/`trigger_replay` mocked
+  at the agent/engine boundary, plus the `/discover` and
+  `/artifacts/.../replay` routes exercised end-to-end via `TestClient`.
 
 To get the coverage report yourself:
 
@@ -203,15 +207,18 @@ code (most of this project) is actually measured, not silently skipped.
 ### Cross-browser
 
 ```bash
-uv run pytest tests/test_cross_browser.py -v
+uv run pytest tests/test_cross_browser.py -v -m cross_browser
 ```
 
 The same deterministic replay flows (`lookup_balance` success,
 `open_sub_account` fraud-hold interstitial recovery) run against Chromium,
 Firefox, and WebKit via a `BrowserSession(engine=...)` parameter, proving the
-locator/retry/interstitial logic isn't accidentally Chromium-specific. This
-is a separate, slower file (6 real browser launches, ~2.5 minutes) kept out
-of the default fast loop on purpose.
+locator/retry/interstitial logic isn't accidentally Chromium-specific. These
+6 tests are tagged `@pytest.mark.cross_browser` and excluded from the default
+`uv run pytest -q` run via `addopts` in `pyproject.toml` -- note the `-m
+cross_browser` flag above is required even when targeting the file directly,
+since `addopts` filters apply regardless of how tests are selected. Real
+browser launches across 3 engines take a few minutes; budget accordingly.
 
 ## 7. Running without live services
 

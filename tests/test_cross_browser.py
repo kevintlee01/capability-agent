@@ -20,6 +20,7 @@ def _allowlist():
     )
 
 
+@pytest.mark.cross_browser
 @pytest.mark.parametrize("engine", ["chromium", "firefox", "webkit"])
 def test_lookup_balance_succeeds_on_every_browser_engine(engine, live_mock_app_url, tmp_path):
     artifact = _retargeted("lookup_balance", live_mock_app_url)
@@ -30,6 +31,7 @@ def test_lookup_balance_succeeds_on_every_browser_engine(engine, live_mock_app_u
     assert outcome.outputs["balance"] == "$4820.55"
 
 
+@pytest.mark.cross_browser
 @pytest.mark.parametrize("engine", ["chromium", "firefox", "webkit"])
 def test_fraud_hold_interstitial_recovers_on_every_browser_engine(engine, live_mock_app_url, tmp_path):
     artifact = _retargeted("open_sub_account", live_mock_app_url)
