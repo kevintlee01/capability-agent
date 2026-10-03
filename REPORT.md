@@ -11,6 +11,30 @@ permits). Everything else is plain modules, no services, no queues: a single
 successful run is cheap, and the brief explicitly says not to build scaling
 infrastructure prematurely.
 
+The discovery loop is a **ReAct-style, single-step-at-a-time agent**:
+observe (accessibility-tree snapshot) -> reason (one-line "reasoning" field,
+logged as a visible chain-of-thought) -> act (exactly one tool call) ->
+re-observe, never a multi-step plan generated up front. This was deliberate:
+a plan-then-execute agent would commit to several steps before seeing how
+step 1 landed, which is brittle exactly where this environment is hardest
+per the assignment's own framing -- runtime conditions (a validation error,
+an unexpected interstitial) that only reveal themselves mid-flow. Re-observing
+after every action means the agent reacts to what the live surface actually
+did, not what it assumed would happen. The cost is latency (one LLM
+round-trip per action) and a deliberately bounded context window
+(`history[-8:]`, so the prompt doesn't grow unbounded over a long run);
+both are acceptable because discovery is a one-time cost, not the
+production path.
+
+That production/discovery split doubles as the system's memory model: the
+live LLM loop is working memory (one goal, a short rolling history, thrown
+away when the run ends), and a saved `CapabilityArtifact` is compiled,
+long-term procedural memory -- "how to do this again," distilled out of the
+raw transcript, parameterized and replayable without ever re-engaging
+working memory. A calling agent never touches the episodic trace; it calls
+a named capability with typed arguments, which is the whole point of
+Section 2's schema.
+
 The discovery loop and the replay engine are **deliberately separate code
 paths** that share only the surface layer and the artifact schema. This is
 the central trade-off of the whole system: discovery is allowed to be messy,
@@ -124,13 +148,26 @@ optional "multi-run stability" stretch goal would surface numerically.
 
 ## 5. Escalation & handoff
 
-**Detecting stuck** has two paths: the LLM can emit `action: "escalate"`
-when it recognizes an unrecoverable ambiguity itself, and the loop
-independently escalates when the step budget is exhausted (a hard backstop
-so a confused model can't loop forever). Replay escalates differently: a
-risky step on a non-approved artifact is blocked outright (Section 6)
-rather than paused for a live decision, since unattended replay should not
-be waiting on a human by design.
+**Detecting stuck** has three paths, not one: the LLM can emit
+`action: "escalate"` when it recognizes an unrecoverable ambiguity itself;
+the loop independently escalates when the step budget is exhausted (a hard
+backstop so a confused model can't loop forever); and, in between those two,
+a lightweight **repetition detector** escalates the instant the *same*
+action (action type + target role + target name + value, as a signature)
+fails twice in a row, rather than waiting out the full step budget on a
+model that is flailing at the same wrong element. This is a distinct failure
+mode from "ran out of budget" -- a model that keeps confidently retrying an
+identical bad guess isn't making slow progress, it's stuck immediately, and
+the spec's own glossary-level framing of "stuck" calls for detecting that
+as its own condition, not folding it into a generic timeout. Two different
+failures in a row do *not* trigger this (the model is still exploring,
+which is healthy); validated by two tests
+(`tests/test_discovery_agent_loop.py`) covering both the trigger and the
+non-trigger case precisely.
+
+**Replay escalates differently.** A risky step on a non-approved artifact
+is blocked outright (Section 6) rather than paused for a live decision,
+since unattended replay should not be waiting on a human by design.
 
 **Control transfer** is file-based and deliberately dumb:
 `SessionControl.request_intervention()` writes `intervention.json`

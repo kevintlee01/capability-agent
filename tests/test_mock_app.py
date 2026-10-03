@@ -109,6 +109,29 @@ def test_open_subaccount_validation_error_on_blank_nickname():
     assert "Nickname is required" in response.text
 
 
+def test_open_subaccount_validation_error_on_invalid_account_type():
+    response = client.post(
+        "/member/10001/open-subaccount",
+        data={"account_type": "Crypto Wallet", "nickname": "x", "initial_deposit": "10"},
+    )
+    assert response.status_code == 200
+    assert "valid account type" in response.text
+
+
+def test_open_subaccount_validation_error_on_overlong_nickname():
+    response = client.post(
+        "/member/10001/open-subaccount",
+        data={"account_type": "Savings", "nickname": "x" * 41, "initial_deposit": "10"},
+    )
+    assert response.status_code == 200
+    assert "40 characters or fewer" in response.text
+
+
+def test_slow_member_simulates_latency_but_still_resolves():
+    response = client.get("/member/50000")
+    assert response.status_code == 200
+
+
 def test_open_subaccount_non_numeric_deposit_is_treated_as_invalid():
     response = client.post(
         "/member/10001/open-subaccount",

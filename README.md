@@ -184,10 +184,11 @@ captured into the evidence log. See `REPORT.md` section 5 for the design.
 uv run pytest -q
 ```
 
-133 tests (the fast default suite -- cross-browser is excluded by a pytest
-marker, see below), 99% statement coverage (the only two uncovered lines are
-a `__main__` entrypoint guard and a deliberately-slow demo-only branch in the
-mock app). Coverage is measured against real, mostly end-to-end behavior --
+138 tests (the fast default suite -- cross-browser is excluded by a pytest
+marker, see below), 99% statement coverage (the only uncovered line across
+the entire codebase is the `if __name__ == "__main__":` CLI entrypoint
+guard, which is standard, universally-accepted-as-untestable boilerplate).
+Coverage is measured against real, mostly end-to-end behavior --
 no LLM or browser calls are faked beyond a scripted fake LLM client standing
 in for the network call itself:
 

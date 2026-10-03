@@ -24,6 +24,7 @@ from capability_agent.surface.browser import BrowserSession
 from capability_agent.surface.observation import page_summary
 
 GRACE_STEPS_AFTER_ESCALATION = 5
+STUCK_LOOP_THRESHOLD = 2
 
 
 class AgentDecision(BaseModel):
@@ -75,6 +76,8 @@ class DiscoveryAgent:
         history: list[str] = []
         step_budget = self.max_steps
         start = monotonic()
+        last_failure_signature: str | None = None
+        consecutive_failures = 0
 
         try:
             while step_budget > 0:
@@ -98,9 +101,23 @@ class DiscoveryAgent:
                 if decision.action == "escalate":
                     self._escalate(control, logger, goal, recorder.next_step_id, decision.failure_reason or "model requested escalation", browser)
                     history.append("human intervention completed, re-observing")
+                    last_failure_signature, consecutive_failures = None, 0
                     continue
 
-                self._execute(browser, decision, recorder, logger, history)
+                succeeded = self._execute(browser, decision, recorder, logger, history)
+                if succeeded:
+                    last_failure_signature, consecutive_failures = None, 0
+                    continue
+
+                signature = f"{decision.action}:{decision.target_role}:{decision.target_name}:{decision.value}"
+                consecutive_failures = consecutive_failures + 1 if signature == last_failure_signature else 1
+                last_failure_signature = signature
+                if consecutive_failures >= STUCK_LOOP_THRESHOLD:
+                    reason = f"same action failed {consecutive_failures} times in a row: {signature}"
+                    logger.event("stuck_loop_detected", {"signature": signature, "count": consecutive_failures})
+                    self._escalate(control, logger, goal, recorder.next_step_id, reason, browser)
+                    history.append("human intervention completed, re-observing")
+                    last_failure_signature, consecutive_failures = None, 0
 
             # Step budget exhausted without finishing: that is itself a stuck condition.
             self._escalate(control, logger, goal, recorder.next_step_id, "max discovery steps reached", browser)
@@ -151,7 +168,7 @@ class DiscoveryAgent:
         result = control.request_intervention(context)
         logger.event("escalation_resolved", result)
 
-    def _execute(self, browser: BrowserSession, decision: AgentDecision, recorder: "_StepRecorder", logger: RunLogger, history: list[str]) -> None:
+    def _execute(self, browser: BrowserSession, decision: AgentDecision, recorder: "_StepRecorder", logger: RunLogger, history: list[str]) -> bool:
         self.allowlist.check_action(decision.action)
         step = recorder.record(decision)
         try:
@@ -170,9 +187,11 @@ class DiscoveryAgent:
                 recorder.record_extraction(decision.extract_as or "value", text)
             history.append(f"{decision.action} {decision.target_role or ''} '{decision.target_name or decision.value or ''}' -> ok")
             logger.event("action_executed", {"action": decision.action, "target": decision.target_name})
+            return True
         except Exception as exc:  # noqa: BLE001 - surfaced to history so the model can adapt
             history.append(f"{decision.action} failed: {exc}")
             logger.event("action_failed", {"action": decision.action, "error": str(exc)})
+            return False
 
 
 @dataclass

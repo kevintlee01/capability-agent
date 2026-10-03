@@ -99,6 +99,35 @@ def test_discovery_escalate_then_resume_completes(live_mock_app_url, tmp_path):
     assert result.status == "completed"
 
 
+def test_discovery_detects_stuck_loop_and_escalates_before_exhausting_step_budget(live_mock_app_url, tmp_path):
+    decisions = [
+        {"reasoning": "click something that is not there", "action": "click", "target_role": "button", "target_name": "Nonexistent Button"},
+        {"reasoning": "try the exact same thing again", "action": "click", "target_role": "button", "target_name": "Nonexistent Button"},
+        {"reasoning": "done", "action": "finish_success", "checkpoint_role": "heading", "checkpoint_name": "Member Search"},
+    ]
+    llm = FakeLLMClient(decisions)
+    agent = _agent(llm, live_mock_app_url, tmp_path, max_steps=10)
+    with PersistentResumer(tmp_path, "unstuck it"):
+        result = agent.run(name="demo", goal="goal", params={})
+    assert result.status == "completed"
+    assert llm.calls == 3, "should escalate right after 2 identical failures, not burn all 10 steps"
+    log_path = next(tmp_path.glob("discover-*/log.jsonl"))
+    assert "stuck_loop_detected" in log_path.read_text()
+
+
+def test_discovery_stuck_loop_counter_resets_after_a_different_action(live_mock_app_url, tmp_path):
+    decisions = [
+        {"reasoning": "click something that is not there", "action": "click", "target_role": "button", "target_name": "Nonexistent Button"},
+        {"reasoning": "try a different nonexistent target", "action": "click", "target_role": "button", "target_name": "Also Nonexistent"},
+        {"reasoning": "done", "action": "finish_success", "checkpoint_role": "heading", "checkpoint_name": "Member Search"},
+    ]
+    llm = FakeLLMClient(decisions)
+    agent = _agent(llm, live_mock_app_url, tmp_path, max_steps=10)
+    result = agent.run(name="demo", goal="goal", params={})
+    assert result.status == "completed"
+    assert llm.calls == 3, "two DIFFERENT failures in a row should not trigger stuck-loop escalation"
+
+
 def test_discovery_unparseable_llm_response_escalates_then_resumes(live_mock_app_url, tmp_path):
     decisions = [
         "not json at all",
