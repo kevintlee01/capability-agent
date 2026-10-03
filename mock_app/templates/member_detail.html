@@ -2,18 +2,22 @@
 {% block content %}
 <div class="card">
 <h2>Member Detail</h2>
+<div class="table-wrap">
 <table border="1" class="data">
 <tr><td>Field</td><td>Value</td></tr>
 <tr><td>Member ID</td><td>{{ member.member_id }}</td></tr>
 <tr><td>Name</td><td>{{ member.first_name }} {{ member.last_name }}</td></tr>
 </table>
+</div>
 <h3>Accounts</h3>
+<div class="table-wrap">
 <table border="1" class="data">
 <tr><td>Account #</td><td>Type</td><td>Balance</td></tr>
 {% for acct in member.accounts %}
 <tr><td>{{ acct.account_number }}</td><td>{{ acct.account_type }}</td><td>${{ "%.2f"|format(acct.balance) }}</td></tr>
 {% endfor %}
 </table>
+</div>
 <a class="btn-link" href="/member/{{ member.member_id }}/open-subaccount">Open Sub-Account &rarr;</a><br>
 <a class="btn-link" href="/">&larr; Back to Search</a>
 </div>
