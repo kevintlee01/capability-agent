@@ -1,0 +1,6 @@
+{"ts": "2026-10-03T02:05:56.810492+00:00", "type": "run_started", "detail": {"run_type": "replay", "run_id": "replay-ec04dbe8"}}
+{"ts": "2026-10-03T02:06:03.130749+00:00", "type": "step_executed", "detail": {"step_id": 1, "attempt": 1}}
+{"ts": "2026-10-03T02:06:07.698457+00:00", "type": "step_executed", "detail": {"step_id": 2, "attempt": 1}}
+{"ts": "2026-10-03T02:06:12.282439+00:00", "type": "step_executed", "detail": {"step_id": 3, "attempt": 1}}
+{"ts": "2026-10-03T02:06:16.823776+00:00", "type": "step_executed", "detail": {"step_id": 4, "attempt": 1}}
+{"ts": "2026-10-03T02:06:21.346094+00:00", "type": "checkpoint_verified", "detail": {"outputs": {"balance": "$4820.55"}}}

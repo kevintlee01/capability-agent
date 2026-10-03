@@ -2,7 +2,7 @@
 {% block content %}
 <div class="card">
 <span class="badge badge-warn">Fraud Review Hold</span>
-<h2 style="border:none; padding-bottom:0;">Fraud Review Hold</h2>
+<h2 class="status-heading">Fraud Review Hold</h2>
 <p>This member's account is flagged for manual fraud review. Proceed anyway?</p>
 <form method="post" action="/member/{{ member.member_id }}/open-subaccount/confirm-hold">
 <input type="hidden" name="account_type" value="{{ account_type }}">

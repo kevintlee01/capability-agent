@@ -14,11 +14,16 @@ heterogeneity/multi-tenant story, escalation, safety, and cuts).
 
 The assignment explicitly steers away from real bank systems and toward a
 proxy target that still exercises "legacy, no-clean-DOM" problems. Rather than
-risk a public site's ToS/rate limits, `mock_app/` is a small, intentionally
-old-school server-rendered app (`Meridian Credit Union - Teller Console`):
-table-based layout, no test IDs, no ARIA labels on form inputs -- it even
-reproduces the "unlabeled textbox" problem that real legacy enterprise screens
-have. It supports a multi-step flow (search -> member detail -> open
+risk a public site's ToS/rate limits, `mock_app/` is a small server-rendered
+app (`Meridian Credit Union - Teller Console`) that looks like real, cared-for
+enterprise software (navy/gold branding, a decorative "Teller Quick
+Reference" sidebar, polished state pages) while its actual markup underneath
+stays deliberately old-school: table-based layout, no test IDs, no ARIA labels
+on form inputs -- it even reproduces the "unlabeled textbox" problem that real
+legacy enterprise screens have. The decorative sidebar is `aria-hidden` and
+never appears in the accessibility-tree observation the agent reads, so the
+automation target is exactly as hostile as before; only the chrome around it
+got nicer. It supports a multi-step flow (search -> member detail -> open
 sub-account -> confirmation) with deterministic, ID-driven injected failure
 modes (not found, permission denied, session timeout, validation error,
 unexpected interstitial, hard server error) so replay error-handling can be
@@ -70,12 +75,18 @@ This drives a real Chromium browser (set `HEADLESS=false` in `.env` to watch
 it), logs every observation/decision/action to `/evidence/discover-<id>/`,
 and on success writes a versioned artifact to `/artifacts/lookup_balance/`.
 
-Two genuine live Gemini discovery runs are committed as evidence so you can
-see this without burning API quota: `evidence/discover-ad48e232/` (member
-lookup -> savings balance, 4 steps) and `evidence/discover-f3307ed3/`
-(member lookup -> open a Checking sub-account -> confirmation, 7 steps,
-autonomously discovered end to end). Both logs show the raw LLM responses,
-reasoning, and actions, not a mocked transcript.
+Four genuine live Gemini discovery runs are committed as evidence so you can
+see this without burning API quota: `evidence/discover-ad48e232/` and
+`evidence/discover-577e4f76/` (member lookup -> savings balance, 4 steps
+each, one run via the CLI and one triggered live through the dashboard's
+Discover page) and `evidence/discover-f3307ed3/` / `evidence/discover-3a6003ed/`
+(member lookup -> open a sub-account -> confirmation, autonomously
+discovered end to end, again one via each entry point). All four logs show
+the raw LLM responses, reasoning, and actions, not a mocked transcript --
+and their matching artifacts are committed under `/artifacts/` with a
+`_live_demo`/`_demo` suffix so they don't collide with the two
+hand-authored reference capabilities (`lookup_balance`, `open_sub_account`)
+used throughout the rest of this README.
 
 **Deterministic replay (no LLM):**
 

@@ -212,7 +212,7 @@ next":
   the brief; Section 4 is the design answer.
 * **The operator surface is a dashboard, not a co-browsing console** --
   explicitly allowed by the scope note; it reads artifacts/evidence from
-  disk and can trigger the one real resume action, but it is not a
+  disk and can trigger discover, replay, and resume, but it is not a
   real-time view into the live browser session itself.
 * **Risk classification is heuristic, not semantic** -- see Section 6.
 * **`allowlist_scope` on the artifact is declarative only** -- it documents

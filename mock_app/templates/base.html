@@ -24,7 +24,12 @@
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    background: var(--paper);
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(11,30,61,0.05), transparent 40%),
+      radial-gradient(circle at 100% 20%, rgba(205,164,61,0.07), transparent 35%),
+      repeating-linear-gradient(0deg, rgba(11,30,61,0.025) 0px, rgba(11,30,61,0.025) 1px, transparent 1px, transparent 28px),
+      var(--paper);
     color: var(--ink);
     font-family: "Segoe UI", Helvetica, Arial, sans-serif;
     font-size: 15px;
@@ -47,6 +52,11 @@
     font-size: 22px;
     letter-spacing: 0.4px;
     margin: 0;
+    padding-left: 38px;
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2l10 5.5v1.5H2V7.5L12 2z' fill='%23cda43d'/><rect x='4' y='10' width='2.2' height='8' fill='%23cda43d'/><rect x='10.9' y='10' width='2.2' height='8' fill='%23cda43d'/><rect x='17.8' y='10' width='2.2' height='8' fill='%23cda43d'/><rect x='2' y='19' width='20' height='2.4' fill='%23cda43d'/></svg>");
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 28px;
   }
   .brand-title .accent { color: var(--gold-light); }
   .brand-sub {
@@ -68,6 +78,44 @@
     margin: 32px auto;
     padding: 0 24px 60px;
   }
+  .page-grid {
+    max-width: 1180px;
+    margin: 32px auto;
+    padding: 0 24px 60px;
+    display: flex;
+    align-items: flex-start;
+    gap: 28px;
+  }
+  .main-col { flex: 1 1 auto; min-width: 0; max-width: 960px; margin: 0 auto; }
+  .side-col {
+    flex: 0 0 260px;
+    position: sticky;
+    top: 24px;
+  }
+  .side-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(16,24,40,0.06), 0 1px 2px rgba(16,24,40,0.04);
+    padding: 18px 20px;
+    margin-bottom: 18px;
+  }
+  .side-card h4 {
+    margin: 0 0 10px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--navy-800);
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 8px;
+  }
+  .side-card ul { margin: 0; padding-left: 18px; }
+  .side-card li { font-size: 12.5px; color: var(--muted); margin-bottom: 7px; line-height: 1.4; }
+  .side-card .hours-row { display: flex; justify-content: space-between; font-size: 12.5px; padding: 4px 0; border-bottom: 1px dashed var(--border); }
+  .side-card .hours-row:last-child { border-bottom: none; }
+  .side-card .hours-day { color: var(--ink); font-weight: 600; }
+  .side-card .hours-time { color: var(--muted); }
+  @media (max-width: 900px) { .side-col { display: none; } }
   .card {
     background: var(--card);
     border: 1px solid var(--border);
@@ -189,8 +237,11 @@
     color: var(--muted);
     font-size: 11px;
     margin-top: 32px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
     letter-spacing: 0.3px;
   }
+  .card h2.status-heading { border: none; padding-bottom: 0; }
 </style>
 </head>
 <body>
@@ -203,9 +254,34 @@
     <div class="session-chip">Teller Window 4 &middot; Branch 0192</div>
   </div>
 </div>
-<div class="page">
+<div class="page-grid">
+<div class="main-col">
 {% block content %}{% endblock %}
 <div class="footer-note">Meridian Credit Union &middot; Internal Use Only &middot; Core Banking Platform v2.3</div>
+</div>
+<div class="side-col" aria-hidden="true">
+  <div class="side-card">
+    <h4>Teller Quick Reference</h4>
+    <ul>
+      <li>Verify member ID and name match before any account action.</li>
+      <li>Fraud review holds require supervisor override code -- see Procedures Manual &sect;4.2.</li>
+      <li>Never share a member's balance with a non-verified caller.</li>
+      <li>Escalate any system error to Core Banking Support at ext. 4420.</li>
+    </ul>
+  </div>
+  <div class="side-card">
+    <h4>Branch Hours</h4>
+    <div class="hours-row"><span class="hours-day">Mon-Thu</span><span class="hours-time">9:00-5:00</span></div>
+    <div class="hours-row"><span class="hours-day">Friday</span><span class="hours-time">9:00-6:00</span></div>
+    <div class="hours-row"><span class="hours-day">Saturday</span><span class="hours-time">9:00-1:00</span></div>
+    <div class="hours-row"><span class="hours-day">Sunday</span><span class="hours-time">Closed</span></div>
+  </div>
+  <div class="side-card">
+    <h4>System Status</h4>
+    <div class="hours-row"><span class="hours-day">Core Banking MC-7</span><span class="badge badge-ok">Online</span></div>
+    <div class="hours-row"><span class="hours-day">Nightly Maintenance</span><span class="hours-time">2:00-2:30 AM ET</span></div>
+  </div>
+</div>
 </div>
 </body>
 </html>
