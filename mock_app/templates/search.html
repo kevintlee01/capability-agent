@@ -4,10 +4,11 @@
 <h2>Member Search</h2>
 {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
 <form method="post" action="/search">
-<table class="field-table">
-<tr><td class="field-label">Member ID</td><td><input type="text" name="member_id"></td></tr>
-<tr><td></td><td><input type="submit" value="Search"></td></tr>
-</table>
+<div class="form-group">
+<div class="form-label">Member ID</div>
+<input type="text" name="member_id">
+</div>
+<input type="submit" value="Search">
 </form>
 </div>
 {% endblock %}
