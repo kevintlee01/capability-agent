@@ -1,7 +1,7 @@
 [project]
-name = "capability-agent"
+name = "computer-use-automation-system"
 version = "0.1.0"
-description = "Add your description here"
+description = "An LLM-driven computer-use agent that discovers a flow once, saves it as a typed capability artifact, and replays it deterministically without the model in the loop."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
