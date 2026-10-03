@@ -1,0 +1,5 @@
+{"ts": "2026-10-02T04:35:05.707782+00:00", "type": "run_started", "detail": {"run_type": "replay", "run_id": "replay-47c084d5"}}
+{"ts": "2026-10-02T04:35:06.685698+00:00", "type": "step_executed", "detail": {"step_id": 1, "attempt": 1}}
+{"ts": "2026-10-02T04:35:06.757933+00:00", "type": "step_executed", "detail": {"step_id": 2, "attempt": 1}}
+{"ts": "2026-10-02T04:35:06.797527+00:00", "type": "step_executed", "detail": {"step_id": 3, "attempt": 1}}
+{"ts": "2026-10-02T04:35:06.813724+00:00", "type": "checkpoint_verified", "detail": {"outputs": {"account_balance": "$998.00"}}}

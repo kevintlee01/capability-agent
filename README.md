@@ -120,8 +120,9 @@ uv run python -m capability_agent.cli list
 
 ## 4. Mission Control dashboard (optional but pretty)
 
-A read-mostly dashboard for browsing saved capability artifacts and run
-evidence, with one real action: resuming a pending escalation.
+A dashboard for browsing saved capability artifacts and run evidence, plus
+three real actions: running a *new* discovery, running a *replay*, and
+resuming a pending escalation.
 
 ```bash
 uv run uvicorn dashboard.main:app --port 8900
@@ -132,6 +133,16 @@ Open http://127.0.0.1:8900/ -- it reads straight from `/artifacts` and
 done. If a run is paused on a human (`intervention.json` present), its detail
 page shows the full context plus a working resume form, wired to the same
 `operator resume` call the CLI uses.
+
+The **official, graded demo path for this project is still the CLI commands
+above** -- that's what Section 6 of the assignment asks for, and it's what
+proves the agent loop and replay engine work without any UI in the way.
+The dashboard's "Discover / Replay" page and the "Run Replay" form on each
+artifact page are a convenience layer on top of that: clicking them calls
+the exact same `DiscoveryAgent.run()` / `replay_artifact()` functions the CLI
+calls, so there's no second code path to trust -- just a nicer way to show
+the system to someone watching over your shoulder. Both still go through the
+allowlist and the risky-step approval gate.
 
 ## 5. Human-in-the-loop escalation demo
 

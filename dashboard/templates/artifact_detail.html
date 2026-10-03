@@ -96,5 +96,41 @@
     {% else %}<p class="text-slate-400 text-sm">None declared</p>{% endfor %}
   </div>
 </div>
+
+<div class="bg-white rounded-2xl p-6 shadow-card border border-slate-100 mb-8">
+  <h2 class="text-lg font-bold text-slate-900 mb-1">Run Replay</h2>
+  <p class="text-slate-500 text-sm mb-4">Deterministic, no LLM involved. Edit the params below and click Run.</p>
+  <form method="post" action="/artifacts/{{ artifact.name }}/{{ artifact.version }}/replay" class="space-y-4" id="replay-form">
+    <div class="grid sm:grid-cols-2 gap-4">
+      {% for p in artifact.params %}
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">{{ p.name }}{% if p.required %} <span class="text-rose-500">*</span>{% endif %}</label>
+        <input type="text" name="param__{{ p.name }}" value="{{ p.example or '' }}" {% if p.required %}required{% endif %}
+               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400">
+      </div>
+      {% endfor %}
+    </div>
+    {% if artifact.params and artifact.params[0].name == 'member_id' %}
+    <div class="flex flex-wrap gap-2">
+      <span class="text-xs text-slate-400 font-medium self-center mr-1">Try:</span>
+      {% for mid, label in [('00000','not found'), ('40300','permission denied'), ('60000','fraud hold'), ('70000','hard failure'), ('90000','session expired')] %}
+      <button type="button" onclick="document.querySelector('input[name=param__member_id]').value='{{ mid }}'" class="text-xs px-3 py-1.5 rounded-full border border-slate-200 hover:border-brand-400 hover:bg-brand-50 text-slate-600 font-medium transition">{{ mid }} ({{ label }})</button>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <label class="flex items-center gap-2 text-sm text-slate-600">
+      <input type="checkbox" name="allow_risky" class="rounded border-slate-300 text-brand-600 focus:ring-brand-400">
+      Allow risky steps (required for state-changing capabilities like opening an account)
+    </label>
+    <button type="submit" id="replay-submit-btn" class="bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-card transition">Run Replay</button>
+  </form>
+</div>
+<script>
+document.getElementById('replay-form').addEventListener('submit', function () {
+  var btn = document.getElementById('replay-submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Running...';
+});
+</script>
 {% endif %}
 {% endblock %}

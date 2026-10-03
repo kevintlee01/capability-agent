@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-8">
+  <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Discover a Capability</h1>
+  <p class="text-slate-500 text-sm mt-1">Give it a goal in plain English. A real Chromium window will drive itself against the mock bank app, with Gemini deciding every click. Takes about 10-15 seconds.</p>
+</div>
+
+<div class="bg-white rounded-2xl p-6 shadow-card border border-slate-100 mb-6">
+  <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3">Quick fill</h2>
+  <div class="flex flex-wrap gap-2">
+    <button type="button" onclick="fillLookup()" class="text-sm px-4 py-2 rounded-xl border border-slate-200 hover:border-brand-400 hover:bg-brand-50 text-slate-700 font-medium transition">Lookup balance</button>
+    <button type="button" onclick="fillOpenSubAccount()" class="text-sm px-4 py-2 rounded-xl border border-slate-200 hover:border-brand-400 hover:bg-brand-50 text-slate-700 font-medium transition">Open sub-account</button>
+  </div>
+</div>
+
+<form method="post" action="/discover" id="discover-form" class="bg-white rounded-2xl p-6 shadow-card border border-slate-100 space-y-5">
+  <div>
+    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Capability name</label>
+    <input type="text" name="name" id="f-name" required placeholder="e.g. lookup_balance"
+           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400">
+  </div>
+  <div>
+    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Goal (plain English)</label>
+    <textarea name="goal" id="f-goal" required rows="2" placeholder="e.g. Look up member 10001 and read their first account's balance"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400"></textarea>
+  </div>
+  <div>
+    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Parameters</label>
+    <div id="param-rows" class="space-y-2"></div>
+    <button type="button" onclick="addParamRow('', '')" class="mt-2 text-xs font-semibold text-brand-600 hover:text-brand-700">+ Add parameter</button>
+  </div>
+  <button type="submit" id="submit-btn" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-5 py-3 rounded-xl shadow-card transition">
+    Run Discovery (watch for the browser window)
+  </button>
+</form>
+
+<script>
+function addParamRow(key, value) {
+  const row = document.createElement('div');
+  row.className = 'flex gap-2';
+  row.innerHTML = `
+    <input type="text" placeholder="param name" value="${key}" class="w-1/3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-mono" data-role="param-key">
+    <input type="text" placeholder="value" value="${value}" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm" data-role="param-value">
+    <button type="button" onclick="this.parentElement.remove()" class="text-slate-300 hover:text-rose-500 px-2">&times;</button>`;
+  document.getElementById('param-rows').appendChild(row);
+}
+
+function clearParamRows() {
+  document.getElementById('param-rows').innerHTML = '';
+}
+
+function fillLookup() {
+  document.getElementById('f-name').value = 'lookup_balance_demo';
+  document.getElementById('f-goal').value = "Look up member 10001 and read their first account's balance";
+  clearParamRows();
+  addParamRow('member_id', '10001');
+}
+
+function fillOpenSubAccount() {
+  document.getElementById('f-name').value = 'open_sub_account_demo';
+  document.getElementById('f-goal').value = "Open a new Savings sub-account for member 20002 with nickname 'Demo Fund' and an initial deposit of 50, and reach the confirmation screen";
+  clearParamRows();
+  addParamRow('member_id', '20002');
+  addParamRow('account_type', 'Savings');
+  addParamRow('nickname', 'Demo Fund');
+  addParamRow('initial_deposit', '50');
+}
+
+document.getElementById('discover-form').addEventListener('submit', function () {
+  document.querySelectorAll('[data-role="param-key"]').forEach(function (keyInput) {
+    const valueInput = keyInput.nextElementSibling;
+    if (keyInput.value) {
+      const hidden = document.createElement('input');
+      hidden.type = 'hidden';
+      hidden.name = 'param__' + keyInput.value;
+      hidden.value = valueInput.value;
+      this.appendChild(hidden);
+    }
+  }, this);
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Running... watch your screen for the live browser window';
+});
+
+addParamRow('member_id', '10001');
+</script>
+{% endblock %}

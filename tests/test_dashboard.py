@@ -163,3 +163,59 @@ def test_resume_run_route_writes_signal_and_redirects(tmp_path, monkeypatch):
     response = client.post("/runs/run-8/resume", data={"note": "handled"}, follow_redirects=False)
     assert response.status_code == 303
     assert (tmp_path / "run-8" / "resume.signal").exists()
+
+
+def test_discover_form_route_renders():
+    response = client.get("/discover")
+    assert response.status_code == 200
+
+
+def test_discover_submit_route_forwards_params_and_redirects(monkeypatch):
+    import dashboard.main as main_module
+    captured = {}
+
+    def fake_trigger_discover(name, goal, params):
+        captured["args"] = (name, goal, params)
+        return "discover-abc"
+
+    monkeypatch.setattr(main_module, "trigger_discover", fake_trigger_discover)
+    response = client.post(
+        "/discover",
+        data={"name": "demo_cap", "goal": "look up a member", "param__member_id": "10001"},
+        follow_redirects=False,
+    )
+    assert response.status_code == 303
+    assert response.headers["location"] == "/runs/discover-abc"
+    assert captured["args"] == ("demo_cap", "look up a member", {"member_id": "10001"})
+
+
+def test_replay_submit_route_forwards_params_and_allow_risky(monkeypatch):
+    import dashboard.main as main_module
+    captured = {}
+
+    def fake_trigger_replay(name, version, params, allow_risky):
+        captured["args"] = (name, version, params, allow_risky)
+        return "replay-xyz"
+
+    monkeypatch.setattr(main_module, "trigger_replay", fake_trigger_replay)
+    response = client.post(
+        "/artifacts/lookup_balance/1.0.0/replay",
+        data={"param__member_id": "10001", "allow_risky": "on"},
+        follow_redirects=False,
+    )
+    assert response.status_code == 303
+    assert response.headers["location"] == "/runs/replay-xyz"
+    assert captured["args"] == ("lookup_balance", "1.0.0", {"member_id": "10001"}, True)
+
+
+def test_replay_submit_route_defaults_allow_risky_false_when_unchecked(monkeypatch):
+    import dashboard.main as main_module
+    captured = {}
+
+    def fake_trigger_replay(name, version, params, allow_risky):
+        captured["allow_risky"] = allow_risky
+        return "replay-xyz"
+
+    monkeypatch.setattr(main_module, "trigger_replay", fake_trigger_replay)
+    client.post("/artifacts/lookup_balance/1.0.0/replay", data={"param__member_id": "10001"}, follow_redirects=False)
+    assert captured["allow_risky"] is False

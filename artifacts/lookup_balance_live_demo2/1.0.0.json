@@ -1,0 +1,144 @@
+{
+  "artifact_id": "lookup_balance_live_demo2-9e69bf32",
+  "name": "lookup_balance_live_demo2",
+  "version": "1.0.0",
+  "description": "Look up member 20002 and read their first account's balance",
+  "target_app": "meridian-credit-union-mock",
+  "surface_type": "legacy_web",
+  "base_url": "http://127.0.0.1:8731",
+  "status": "draft",
+  "created_by": "llm_discovery",
+  "allowlist_scope": [],
+  "params": [
+    {
+      "name": "member_id",
+      "type": "string",
+      "required": true,
+      "description": "Input 'member_id'",
+      "example": "20002"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "account_balance",
+      "type": "string",
+      "description": "Extracted value 'account_balance'",
+      "source_step_id": 3
+    }
+  ],
+  "steps": [
+    {
+      "step_id": 1,
+      "action": "fill",
+      "description": "Enter the member ID 20002 into the member ID textbox to look up the member.",
+      "locator": {
+        "primary": {
+          "kind": "role",
+          "value": "",
+          "role": "textbox",
+          "nth": 0
+        },
+        "fallbacks": [],
+        "frame_path": []
+      },
+      "value": "{{params.member_id}}",
+      "extract_as": null,
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    },
+    {
+      "step_id": 2,
+      "action": "click",
+      "description": "Click the Search button to perform the member lookup for ID 20002.",
+      "locator": {
+        "primary": {
+          "kind": "role",
+          "value": "Search",
+          "role": "button",
+          "nth": null
+        },
+        "fallbacks": [
+          {
+            "kind": "text",
+            "value": "Search",
+            "role": null,
+            "nth": null
+          }
+        ],
+        "frame_path": []
+      },
+      "value": null,
+      "extract_as": null,
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    },
+    {
+      "step_id": 3,
+      "action": "extract",
+      "description": "The first account's balance is $998.00. I can now extract this or finish success, let's extract it as account_balance.",
+      "locator": {
+        "primary": {
+          "kind": "role",
+          "value": "$998.00",
+          "role": "cell",
+          "nth": null
+        },
+        "fallbacks": [
+          {
+            "kind": "text",
+            "value": "$998.00",
+            "role": null,
+            "nth": null
+          }
+        ],
+        "frame_path": []
+      },
+      "value": null,
+      "extract_as": "account_balance",
+      "risk_level": null,
+      "timeout_ms": 5000,
+      "retry": {
+        "max_attempts": 1,
+        "backoff_ms": 500
+      }
+    }
+  ],
+  "checkpoint": {
+    "locator": {
+      "primary": {
+        "kind": "role",
+        "value": "Accounts",
+        "role": "heading",
+        "nth": null
+      },
+      "fallbacks": [
+        {
+          "kind": "text",
+          "value": "Accounts",
+          "role": null,
+          "nth": null
+        }
+      ],
+      "frame_path": []
+    },
+    "expected_text_contains": "Accounts",
+    "description": "Checkpoint: heading 'Accounts'"
+  },
+  "known_outcomes": [],
+  "interstitials": [],
+  "discovery_meta": {
+    "model": "gemini-flash-lite-latest",
+    "run_id": "discover-577e4f76",
+    "step_count": 3,
+    "duration_ms": 3909,
+    "discovered_at": "2026-10-02T04:34:54.845291Z"
+  }
+}
