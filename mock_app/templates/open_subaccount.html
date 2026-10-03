@@ -8,20 +8,26 @@
 <div class="form-group">
 <div class="form-label">Account Type</div>
 <select name="account_type">
-<option value="Savings">Savings</option>
-<option value="Checking">Checking</option>
+<option value="Savings" {% if account_type != "Checking" %}selected{% endif %}>Savings</option>
+<option value="Checking" {% if account_type == "Checking" %}selected{% endif %}>Checking</option>
 </select>
 </div>
 <div class="form-group">
 <div class="form-label">Nickname</div>
-<input type="text" name="nickname">
+<input type="text" name="nickname" maxlength="40" value="{{ nickname or '' }}">
 </div>
 <div class="form-group">
 <div class="form-label">Initial Deposit</div>
-<input type="number" name="initial_deposit" step="0.01" min="0" inputmode="decimal">
+<input type="number" name="initial_deposit" step="0.01" min="0" inputmode="decimal" value="{{ initial_deposit or '' }}" id="initial-deposit-input">
 </div>
 <input type="submit" value="Open Account">
 </form>
 <a class="btn-link" href="/member/{{ member.member_id }}">&larr; Back to Member</a>
 </div>
+<script>
+document.getElementById('initial-deposit-input').addEventListener('blur', function () {
+  var parsed = parseFloat(this.value);
+  if (this.value !== '' && !isNaN(parsed)) { this.value = parsed.toFixed(2); }
+});
+</script>
 {% endblock %}

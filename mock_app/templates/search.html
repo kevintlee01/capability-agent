@@ -6,7 +6,7 @@
 <form method="post" action="/search">
 <div class="form-group">
 <div class="form-label">Member ID</div>
-<input type="text" name="member_id">
+<input type="text" name="member_id" value="{{ member_id or '' }}">
 </div>
 <input type="submit" value="Search">
 </form>
