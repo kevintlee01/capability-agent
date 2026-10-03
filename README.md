@@ -16,14 +16,22 @@ The assignment explicitly steers away from real bank systems and toward a
 proxy target that still exercises "legacy, no-clean-DOM" problems. Rather than
 risk a public site's ToS/rate limits, `mock_app/` is a small server-rendered
 app (`Meridian Credit Union - Teller Console`) that looks like real, cared-for
-enterprise software (navy/gold branding, a decorative "Teller Quick
+enterprise software (clean modern branding, a decorative "Teller Quick
 Reference" sidebar, polished state pages) while its actual markup underneath
 stays deliberately old-school: table-based layout, no test IDs, no ARIA labels
 on form inputs -- it even reproduces the "unlabeled textbox" problem that real
 legacy enterprise screens have. The decorative sidebar is `aria-hidden` and
 never appears in the accessibility-tree observation the agent reads, so the
 automation target is exactly as hostile as before; only the chrome around it
-got nicer. It supports a multi-step flow (search -> member detail -> open
+got nicer. Ordinary human-usability bugs (a raw framework validation error
+instead of a friendly message, a missing input limit) were still worth
+fixing even on a deliberately-hostile target, since a real legacy app would
+have *some* basic input handling even if its DOM is a mess -- so empty/
+missing required fields always render the app's own friendly error banner
+(never a raw 422), nicknames are capped at 40 characters client- and
+server-side, and the deposit field self-formats to 2 decimals on blur. None
+of this touches the unlabeled/no-ARIA properties above. It supports a
+multi-step flow (search -> member detail -> open
 sub-account -> confirmation) with deterministic, ID-driven injected failure
 modes (not found, permission denied, session timeout, validation error,
 unexpected interstitial, hard server error) so replay error-handling can be
