@@ -1,30 +1,51 @@
 {% extends "base.html" %}
 {% block content %}
 {% if not artifact %}
-<p class="text-rose-500">Artifact {{ name }}@{{ version }} not found.</p>
+<div class="bg-white rounded-2xl p-10 text-center shadow-card border border-slate-100">
+  <p class="text-rose-500 font-medium">Artifact {{ name }}@{{ version }} not found.</p>
+  <a href="/" class="inline-block mt-3 text-brand-600 hover:text-brand-700 text-sm font-semibold">&larr; Back to overview</a>
+</div>
 {% else %}
 <a href="/" class="inline-flex items-center gap-1 text-slate-400 hover:text-slate-700 text-sm font-medium">
   <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
   Back to overview
 </a>
-<div class="flex items-center justify-between mt-4 mb-6">
-  <div>
-    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">{{ artifact.name }} <span class="text-slate-400 font-medium text-base">v{{ artifact.version }}</span></h1>
-    <p class="text-slate-500 text-sm mt-1">{{ artifact.description }}</p>
+
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-4 mb-6">
+  <div class="flex items-center gap-4">
+    <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-brand-500 to-violet-500 text-white flex items-center justify-center shadow-glow shrink-0">
+      <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    </div>
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900 tracking-tight">{{ artifact.name }} <span class="text-slate-400 font-medium text-base">v{{ artifact.version }}</span></h1>
+      <p class="text-slate-500 text-sm mt-0.5">{{ artifact.description }}</p>
+    </div>
   </div>
-  <span class="text-xs px-3 py-1.5 rounded-full font-medium {% if artifact.status == 'approved' %}bg-emerald-50 text-emerald-700{% else %}bg-amber-50 text-amber-700{% endif %}">{{ artifact.status }}</span>
+  <span class="shrink-0 text-xs px-3 py-1.5 rounded-full font-semibold w-fit {% if artifact.status == 'approved' %}bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200{% else %}bg-amber-50 text-amber-700 ring-1 ring-amber-200{% endif %}">{{ artifact.status }}</span>
 </div>
 
 <div class="grid md:grid-cols-4 gap-4 mb-8 text-sm">
-  <div class="bg-white rounded-xl p-4 shadow-card border border-slate-100"><div class="text-slate-400 text-xs font-semibold uppercase tracking-wide">Target App</div><div class="text-slate-900 mt-1.5 font-medium">{{ artifact.target_app }}</div></div>
-  <div class="bg-white rounded-xl p-4 shadow-card border border-slate-100"><div class="text-slate-400 text-xs font-semibold uppercase tracking-wide">Surface</div><div class="text-slate-900 mt-1.5 font-medium">{{ artifact.surface_type }}</div></div>
-  <div class="bg-white rounded-xl p-4 shadow-card border border-slate-100"><div class="text-slate-400 text-xs font-semibold uppercase tracking-wide">Base URL</div><div class="text-slate-900 mt-1.5 font-medium truncate">{{ artifact.base_url }}</div></div>
-  <div class="bg-white rounded-xl p-4 shadow-card border border-slate-100"><div class="text-slate-400 text-xs font-semibold uppercase tracking-wide">Created By</div><div class="text-slate-900 mt-1.5 font-medium">{{ artifact.created_by }}</div></div>
+  <div class="bg-white rounded-xl p-4 shadow-card border border-slate-100">
+    <div class="flex items-center gap-1.5 text-slate-400 text-xs font-semibold uppercase tracking-wide"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>Target App</div>
+    <div class="text-slate-900 mt-1.5 font-medium truncate">{{ artifact.target_app }}</div>
+  </div>
+  <div class="bg-white rounded-xl p-4 shadow-card border border-slate-100">
+    <div class="flex items-center gap-1.5 text-slate-400 text-xs font-semibold uppercase tracking-wide"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16M4 12h16M4 19h16"/></svg>Surface</div>
+    <div class="text-slate-900 mt-1.5 font-medium">{{ artifact.surface_type }}</div>
+  </div>
+  <div class="bg-white rounded-xl p-4 shadow-card border border-slate-100">
+    <div class="flex items-center gap-1.5 text-slate-400 text-xs font-semibold uppercase tracking-wide"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Base URL</div>
+    <div class="text-slate-900 mt-1.5 font-medium truncate" title="{{ artifact.base_url }}">{{ artifact.base_url }}</div>
+  </div>
+  <div class="bg-white rounded-xl p-4 shadow-card border border-slate-100">
+    <div class="flex items-center gap-1.5 text-slate-400 text-xs font-semibold uppercase tracking-wide"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>Created By</div>
+    <div class="text-slate-900 mt-1.5 font-medium">{{ artifact.created_by }}</div>
+  </div>
 </div>
 
 <div class="grid md:grid-cols-2 gap-6 mb-8">
   <div class="bg-white rounded-2xl p-6 shadow-card border border-slate-100">
-    <h2 class="text-lg font-bold text-slate-900 mb-3">Input Parameters</h2>
+    <h2 class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2"><svg class="h-4 w-4 text-brand-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v16m8-8H4"/></svg>Input Parameters</h2>
     {% for p in artifact.params %}
     <div class="text-sm py-2.5 border-b border-slate-50 last:border-0">
       <span class="font-mono text-brand-600 font-medium">{{ p.name }}</span>
@@ -35,7 +56,7 @@
     {% else %}<p class="text-slate-400 text-sm">None</p>{% endfor %}
   </div>
   <div class="bg-white rounded-2xl p-6 shadow-card border border-slate-100">
-    <h2 class="text-lg font-bold text-slate-900 mb-3">Outputs</h2>
+    <h2 class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2"><svg class="h-4 w-4 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Outputs</h2>
     {% for o in artifact.outputs %}
     <div class="text-sm py-2.5 border-b border-slate-50 last:border-0">
       <span class="font-mono text-emerald-600 font-medium">{{ o.name }}</span>
@@ -47,38 +68,41 @@
 </div>
 
 <div class="bg-white rounded-2xl p-6 shadow-card border border-slate-100 mb-8">
-  <h2 class="text-lg font-bold text-slate-900 mb-4">Steps</h2>
-  <div class="space-y-4">
-    {% for s in artifact.steps %}
-    <div class="flex gap-4 items-start">
-      <div class="h-7 w-7 rounded-full bg-brand-50 text-brand-600 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{{ s.step_id }}</div>
-      <div class="flex-1 border-b border-slate-50 pb-4">
-        <div class="flex items-center gap-2 flex-wrap">
-          <span class="text-xs px-2 py-1 rounded-md bg-slate-100 text-slate-700 font-mono font-medium">{{ s.action }}</span>
-          {% if s.risk_level == 'risky' %}<span class="text-xs px-2 py-1 rounded-md bg-rose-50 text-rose-600 font-medium">risky</span>{% endif %}
-          <span class="text-slate-700 text-sm">{{ s.description }}</span>
+  <h2 class="text-lg font-bold text-slate-900 mb-5">Steps</h2>
+  <div class="relative">
+    <div class="absolute left-[13px] top-2 bottom-2 w-px bg-slate-100"></div>
+    <div class="space-y-5">
+      {% for s in artifact.steps %}
+      <div class="flex gap-4 items-start relative">
+        <div class="h-7 w-7 rounded-full bg-brand-50 text-brand-600 text-xs font-bold flex items-center justify-center shrink-0 ring-4 ring-white z-10">{{ s.step_id }}</div>
+        <div class="flex-1 pb-1">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-xs px-2 py-1 rounded-md bg-slate-100 text-slate-700 font-mono font-medium">{{ s.action }}</span>
+            {% if s.risk_level == 'risky' %}<span class="text-xs px-2 py-1 rounded-md bg-rose-50 text-rose-600 font-medium">risky</span>{% endif %}
+            <span class="text-slate-700 text-sm">{{ s.description }}</span>
+          </div>
+          {% if s.locator %}
+          <div class="text-xs text-slate-400 mt-2 font-mono bg-slate-50 rounded-lg px-3 py-2">
+            primary: {{ s.locator.primary.kind }}={{ s.locator.primary.value }}{% if s.locator.primary.role %} (role={{ s.locator.primary.role }}){% endif %}{% if s.locator.primary.nth is not none %} [nth={{ s.locator.primary.nth }}]{% endif %}
+            {% if s.locator.fallbacks %}<br>&rarr; fallback: {{ s.locator.fallbacks[0].kind }}={{ s.locator.fallbacks[0].value }}{% endif %}
+          </div>
+          {% endif %}
+          {% if s.value %}<div class="text-xs text-slate-400 mt-1.5">value: <span class="font-mono text-slate-600">{{ s.value }}</span></div>{% endif %}
         </div>
-        {% if s.locator %}
-        <div class="text-xs text-slate-400 mt-2 font-mono bg-slate-50 rounded-lg px-3 py-2">
-          primary: {{ s.locator.primary.kind }}={{ s.locator.primary.value }}{% if s.locator.primary.role %} (role={{ s.locator.primary.role }}){% endif %}{% if s.locator.primary.nth is not none %} [nth={{ s.locator.primary.nth }}]{% endif %}
-          {% if s.locator.fallbacks %}<br>&rarr; fallback: {{ s.locator.fallbacks[0].kind }}={{ s.locator.fallbacks[0].value }}{% endif %}
-        </div>
-        {% endif %}
-        {% if s.value %}<div class="text-xs text-slate-400 mt-1.5">value: <span class="font-mono text-slate-600">{{ s.value }}</span></div>{% endif %}
       </div>
+      {% endfor %}
     </div>
-    {% endfor %}
   </div>
 </div>
 
 <div class="grid md:grid-cols-3 gap-6 mb-8">
   <div class="bg-white rounded-2xl p-6 shadow-card border border-slate-100">
-    <h2 class="text-lg font-bold text-slate-900 mb-3">Checkpoint</h2>
+    <h2 class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2"><svg class="h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Checkpoint</h2>
     <p class="text-slate-600 text-sm">{{ artifact.checkpoint.description }}</p>
     <p class="text-xs text-slate-400 mt-2 font-mono bg-slate-50 rounded-lg px-3 py-2">{{ artifact.checkpoint.locator.primary.kind }}={{ artifact.checkpoint.locator.primary.value }}</p>
   </div>
   <div class="bg-white rounded-2xl p-6 shadow-card border border-slate-100">
-    <h2 class="text-lg font-bold text-slate-900 mb-3">Known Business Outcomes</h2>
+    <h2 class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2"><svg class="h-4 w-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9L2.6 17a1.5 1.5 0 001.3 2.2h16.2a1.5 1.5 0 001.3-2.2L13.7 3.9a1.5 1.5 0 00-2.6 0z"/></svg>Known Business Outcomes</h2>
     {% for o in artifact.known_outcomes %}
     <div class="text-sm py-2 border-b border-slate-50 last:border-0">
       <span class="font-mono text-amber-600 font-medium">{{ o.name }}</span>
@@ -87,7 +111,7 @@
     {% else %}<p class="text-slate-400 text-sm">None declared</p>{% endfor %}
   </div>
   <div class="bg-white rounded-2xl p-6 shadow-card border border-slate-100">
-    <h2 class="text-lg font-bold text-slate-900 mb-3">Interstitial Handlers</h2>
+    <h2 class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2"><svg class="h-4 w-4 text-sky-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M4 12a8 8 0 1116 0 8 8 0 01-16 0z"/></svg>Interstitial Handlers</h2>
     {% for i in artifact.interstitials %}
     <div class="text-sm py-2 border-b border-slate-50 last:border-0">
       <span class="font-mono text-sky-600 font-medium">{{ i.name }}</span>
@@ -98,7 +122,10 @@
 </div>
 
 <div class="bg-white rounded-2xl p-6 shadow-card border border-slate-100 mb-8">
-  <h2 class="text-lg font-bold text-slate-900 mb-1">Run Replay</h2>
+  <h2 class="text-lg font-bold text-slate-900 mb-1 flex items-center gap-2">
+    <svg class="h-4 w-4 text-brand-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-4M20 15a9 9 0 01-15 4"/></svg>
+    Run Replay
+  </h2>
   <p class="text-slate-500 text-sm mb-4">Deterministic, no LLM involved. Edit the params below and click Run.</p>
   <form method="post" action="/artifacts/{{ artifact.name }}/{{ artifact.version }}/replay" class="space-y-4" id="replay-form">
     <div class="grid sm:grid-cols-2 gap-4">
@@ -106,15 +133,17 @@
       <div>
         <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">{{ p.name }}{% if p.required %} <span class="text-rose-500">*</span>{% endif %}</label>
         <input type="text" name="param__{{ p.name }}" value="{{ p.example or '' }}" {% if p.required %}required{% endif %}
-               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400">
+               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition">
       </div>
       {% endfor %}
     </div>
     {% if artifact.params and artifact.params[0].name == 'member_id' %}
     <div class="flex flex-wrap gap-2">
       <span class="text-xs text-slate-400 font-medium self-center mr-1">Try:</span>
-      {% for mid, label in [('00000','not found'), ('40300','permission denied'), ('60000','fraud hold'), ('70000','hard failure'), ('90000','session expired')] %}
-      <button type="button" onclick="document.querySelector('input[name=param__member_id]').value='{{ mid }}'" class="text-xs px-3 py-1.5 rounded-full border border-slate-200 hover:border-brand-400 hover:bg-brand-50 text-slate-600 font-medium transition">{{ mid }} ({{ label }})</button>
+      {% for mid, label, dot in [('00000','not found','bg-slate-400'), ('40300','permission denied','bg-rose-400'), ('60000','fraud hold','bg-amber-400'), ('70000','hard failure','bg-rose-500'), ('90000','session expired','bg-sky-400')] %}
+      <button type="button" onclick="document.querySelector('input[name=param__member_id]').value='{{ mid }}'" class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border border-slate-200 hover:border-brand-400 hover:bg-brand-50 text-slate-600 font-medium transition">
+        <span class="h-1.5 w-1.5 rounded-full {{ dot }}"></span>{{ mid }} ({{ label }})
+      </button>
       {% endfor %}
     </div>
     {% endif %}
@@ -122,14 +151,19 @@
       <input type="checkbox" name="allow_risky" class="rounded border-slate-300 text-brand-600 focus:ring-brand-400">
       Allow risky steps (required for state-changing capabilities like opening an account)
     </label>
-    <button type="submit" id="replay-submit-btn" class="bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-card transition">Run Replay</button>
+    <button type="submit" id="replay-submit-btn" class="flex items-center justify-center gap-2 bg-gradient-to-r from-brand-600 to-violet-600 hover:from-brand-700 hover:to-violet-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-lg shadow-brand-500/20 transition">
+      <svg id="replay-submit-icon" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-4M20 15a9 9 0 01-15 4"/></svg>
+      <span id="replay-submit-label">Run Replay</span>
+    </button>
   </form>
 </div>
 <script>
 document.getElementById('replay-form').addEventListener('submit', function () {
   var btn = document.getElementById('replay-submit-btn');
   btn.disabled = true;
-  btn.textContent = 'Running...';
+  btn.classList.add('opacity-80', 'cursor-wait');
+  document.getElementById('replay-submit-icon').outerHTML = '<svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/></svg>';
+  document.getElementById('replay-submit-label').textContent = 'Running...';
 });
 </script>
 {% endif %}

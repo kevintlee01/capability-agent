@@ -1,38 +1,76 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="mb-8">
-  <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Discover a Capability</h1>
-  <p class="text-slate-500 text-sm mt-1">Give it a goal in plain English. A real Chromium window will drive itself against the mock bank app, with Gemini deciding every click. Takes about 10-15 seconds.</p>
-</div>
+<div class="grid lg:grid-cols-3 gap-6">
+  <div class="lg:col-span-2 space-y-6">
+    <div class="bg-white rounded-2xl p-6 shadow-card border border-slate-100">
+      <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Quick fill</h2>
+      <div class="flex flex-wrap gap-3">
+        <button type="button" onclick="fillLookup()" class="group flex items-center gap-3 text-left px-4 py-3 rounded-xl border border-slate-200 hover:border-brand-400 hover:bg-brand-50/60 transition">
+          <div class="h-9 w-9 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          </div>
+          <div>
+            <div class="text-sm font-semibold text-slate-800">Lookup balance</div>
+            <div class="text-xs text-slate-400">member 10001 &middot; 4 steps</div>
+          </div>
+        </button>
+        <button type="button" onclick="fillOpenSubAccount()" class="group flex items-center gap-3 text-left px-4 py-3 rounded-xl border border-slate-200 hover:border-brand-400 hover:bg-brand-50/60 transition">
+          <div class="h-9 w-9 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v16m8-8H4"/></svg>
+          </div>
+          <div>
+            <div class="text-sm font-semibold text-slate-800">Open sub-account</div>
+            <div class="text-xs text-slate-400">member 20002 &middot; multi-step + confirmation</div>
+          </div>
+        </button>
+      </div>
+    </div>
 
-<div class="bg-white rounded-2xl p-6 shadow-card border border-slate-100 mb-6">
-  <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3">Quick fill</h2>
-  <div class="flex flex-wrap gap-2">
-    <button type="button" onclick="fillLookup()" class="text-sm px-4 py-2 rounded-xl border border-slate-200 hover:border-brand-400 hover:bg-brand-50 text-slate-700 font-medium transition">Lookup balance</button>
-    <button type="button" onclick="fillOpenSubAccount()" class="text-sm px-4 py-2 rounded-xl border border-slate-200 hover:border-brand-400 hover:bg-brand-50 text-slate-700 font-medium transition">Open sub-account</button>
+    <form method="post" action="/discover" id="discover-form" class="bg-white rounded-2xl p-6 shadow-card border border-slate-100 space-y-5">
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Capability name</label>
+        <input type="text" name="name" id="f-name" required placeholder="e.g. lookup_balance"
+               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Goal (plain English)</label>
+        <textarea name="goal" id="f-goal" required rows="2" placeholder="e.g. Look up member 10001 and read their first account's balance"
+                  class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition"></textarea>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Parameters</label>
+        <div id="param-rows" class="space-y-2"></div>
+        <button type="button" onclick="addParamRow('', '')" class="mt-2 text-xs font-semibold text-brand-600 hover:text-brand-700">+ Add parameter</button>
+      </div>
+      <button type="submit" id="submit-btn" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-600 to-violet-600 hover:from-brand-700 hover:to-violet-700 text-white text-sm font-semibold px-5 py-3.5 rounded-xl shadow-lg shadow-brand-500/20 transition">
+        <svg id="submit-icon" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <span id="submit-label">Run Discovery</span>
+      </button>
+    </form>
+  </div>
+
+  <div class="space-y-6">
+    <div class="bg-white rounded-2xl p-6 shadow-card border border-slate-100">
+      <h2 class="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+        <svg class="h-4 w-4 text-brand-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+        How this works
+      </h2>
+      <ol class="space-y-4 text-sm text-slate-600">
+        <li class="flex gap-3"><span class="h-5 w-5 rounded-full bg-brand-50 text-brand-600 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>Gemini opens a real Chromium window against the mock bank app and reads the live accessibility tree.</li>
+        <li class="flex gap-3"><span class="h-5 w-5 rounded-full bg-brand-50 text-brand-600 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>It decides one action at a time &mdash; click, fill, navigate &mdash; until the goal is reached or it gets stuck.</li>
+        <li class="flex gap-3"><span class="h-5 w-5 rounded-full bg-brand-50 text-brand-600 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>On success, the whole flow is saved as a typed, versioned capability artifact.</li>
+        <li class="flex gap-3"><span class="h-5 w-5 rounded-full bg-emerald-50 text-emerald-600 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">4</span>From then on, <span class="font-semibold text-slate-800">Replay</span> re-runs that artifact deterministically &mdash; no LLM, no re-reasoning.</li>
+      </ol>
+    </div>
+    <div class="bg-amber-50/60 border border-amber-200 rounded-2xl p-5">
+      <div class="flex items-center gap-2 text-amber-800 font-semibold text-sm mb-1.5">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9L2.6 17a1.5 1.5 0 001.3 2.2h16.2a1.5 1.5 0 001.3-2.2L13.7 3.9a1.5 1.5 0 00-2.6 0z"/></svg>
+        Heads up
+      </div>
+      <p class="text-amber-800/80 text-xs leading-relaxed">A real browser window will pop up on your screen for ~10-15 seconds while Gemini works. Don't close it &mdash; it closes itself when the run finishes.</p>
+    </div>
   </div>
 </div>
-
-<form method="post" action="/discover" id="discover-form" class="bg-white rounded-2xl p-6 shadow-card border border-slate-100 space-y-5">
-  <div>
-    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Capability name</label>
-    <input type="text" name="name" id="f-name" required placeholder="e.g. lookup_balance"
-           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400">
-  </div>
-  <div>
-    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Goal (plain English)</label>
-    <textarea name="goal" id="f-goal" required rows="2" placeholder="e.g. Look up member 10001 and read their first account's balance"
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400"></textarea>
-  </div>
-  <div>
-    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Parameters</label>
-    <div id="param-rows" class="space-y-2"></div>
-    <button type="button" onclick="addParamRow('', '')" class="mt-2 text-xs font-semibold text-brand-600 hover:text-brand-700">+ Add parameter</button>
-  </div>
-  <button type="submit" id="submit-btn" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-5 py-3 rounded-xl shadow-card transition">
-    Run Discovery (watch for the browser window)
-  </button>
-</form>
 
 <script>
 function addParamRow(key, value) {
@@ -79,7 +117,9 @@ document.getElementById('discover-form').addEventListener('submit', function () 
   }, this);
   const btn = document.getElementById('submit-btn');
   btn.disabled = true;
-  btn.textContent = 'Running... watch your screen for the live browser window';
+  btn.classList.add('opacity-80', 'cursor-wait');
+  document.getElementById('submit-icon').outerHTML = '<svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/></svg>';
+  document.getElementById('submit-label').textContent = 'Running... watch your screen for the live browser window';
 });
 
 addParamRow('member_id', '10001');

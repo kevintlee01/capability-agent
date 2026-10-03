@@ -28,19 +28,28 @@ def index(request: Request):
         "pending_count": sum(1 for r in runs if r["pending_escalation"]),
         "distribution": outcome_distribution(),
         "active": "overview",
+        "page_title": "Overview",
+        "page_subtitle": "Everything this system has discovered and replayed, in one place.",
     })
 
 
 @app.get("/artifacts/{name}/{version}", response_class=HTMLResponse)
 def artifact_detail(request: Request, name: str, version: str):
     artifact = get_artifact(name, version)
-    return templates.TemplateResponse(request, "artifact_detail.html", {"artifact": artifact, "name": name, "version": version, "active": "capabilities"})
+    title = f"{name} v{version}" if artifact else "Capability not found"
+    return templates.TemplateResponse(request, "artifact_detail.html", {
+        "artifact": artifact, "name": name, "version": version, "active": "capabilities",
+        "page_title": title, "page_subtitle": "Capability artifact",
+    })
 
 
 @app.get("/runs/{run_id}", response_class=HTMLResponse)
 def run_detail(request: Request, run_id: str):
     run = get_run_detail(run_id)
-    return templates.TemplateResponse(request, "run_detail.html", {"run": run, "active": "runs"})
+    return templates.TemplateResponse(request, "run_detail.html", {
+        "run": run, "active": "runs",
+        "page_title": run_id, "page_subtitle": "Run evidence",
+    })
 
 
 @app.post("/runs/{run_id}/resume")
@@ -57,7 +66,10 @@ def _extract_params(form) -> dict[str, str]:
 
 @app.get("/discover", response_class=HTMLResponse)
 def discover_form(request: Request):
-    return templates.TemplateResponse(request, "discover.html", {"active": "discover"})
+    return templates.TemplateResponse(request, "discover.html", {
+        "active": "discover", "page_title": "Discover / Replay",
+        "page_subtitle": "Kick off a live LLM discovery or re-run a saved capability",
+    })
 
 
 @app.post("/discover")
